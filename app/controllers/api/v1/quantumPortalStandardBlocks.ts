@@ -4,13 +4,13 @@ module.exports = function (router: any) {
 
     var filter: any = {};
 
-    let quantumPortalTransactions = await db.QuantumPortalTransactions.find(filter).populate('network')
+    let quantumPortalStandardBlocks = await db.QuantumPortalStandardBlocks.find(filter)
       .sort({ createdAt: -1 })
       .skip(req.query.offset ? parseInt(req.query.offset) : 0)
       .limit(req.query.limit ? parseInt(req.query.limit) : 10)
 
     return res.http200({
-      quantumPortalTransactions: quantumPortalTransactions
+      quantumPortalStandardBlocks: quantumPortalStandardBlocks
     });
 
   }));
@@ -20,10 +20,10 @@ module.exports = function (router: any) {
     var filter: any = {}
     filter._id = req.params.id;
 
-    let quantumPortalTransaction = await db.QuantumPortalTransactions.findOne(filter);
+    let quantumPortalStandardBlock = await db.QuantumPortalStandardBlocks.findOne(filter);
 
     return res.http200({
-      quantumPortalTransaction: quantumPortalTransaction
+      quantumPortalStandardBlock: quantumPortalStandardBlock
     });
 
   }));
@@ -32,17 +32,10 @@ module.exports = function (router: any) {
 
     var filter: any = {}
 
-    let quantumPortalTransaction = await db.QuantumPortalTransactions.create(req.body);
+    let quantumPortalStandardBlock = await db.QuantumPortalStandardBlocks.create(req.body);
 
     return res.http200({
-      quantumPortalTransaction: quantumPortalTransaction
-    });
-
-  }));
-
-  router.get('/', asyncMiddleware(async (req: any, res: any) => {
-    return res.http200({
-      message: 'success'
+      quantumPortalStandardBlock: quantumPortalStandardBlock
     });
 
   }));
