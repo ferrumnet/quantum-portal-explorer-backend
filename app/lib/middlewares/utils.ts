@@ -2,8 +2,7 @@
 declare const db: any,
 asyncMiddleware: any,
 commonFunctions: any,
-stringHelper: any,
-signatureHelper: any
+stringHelper: any
 
 
 

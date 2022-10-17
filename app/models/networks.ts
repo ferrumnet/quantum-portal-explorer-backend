@@ -21,7 +21,6 @@ var schema = mongoose.Schema({
   contractAddress: { type: String, default: "" },
   publicRpcUrl: { type: String, default: "" },
   backupRpcUrl: { type: String, default: "" },
-  isAllowdOnVesting: { type: Boolean, default: false },
 
   createdAt: { type: Date, default: new Date() },
   updatedAt: { type: Date, default: new Date() },

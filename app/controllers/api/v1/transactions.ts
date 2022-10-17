@@ -1,66 +1,50 @@
 module.exports = function (router: any) {
 
-  router.get('/list', async (req: any, res: any) => {
+  router.get('/list', asyncMiddleware(async (req: any, res: any) => {
 
     var filter: any = {};
 
-    if(req.query.organizationIdentifier){
-      filter.organizationIdentifier = req.query.organizationIdentifier;
-    }
-
-    if(req.query.status){
-      filter.status = req.query.status;
-    }
-
-    if(req.query.statusNotEqual){
-      filter.status = {$ne: req.query.statusNotEqual};
-    }
-
-    if(req.query.userAdress){
-      filter.usersAdresses = {$in: (req.query.userAdress).toLowerCase()};
-    }
-
-    if(req.query.tokenContractAddress){
-      filter.tokenContractAddress = req.query.tokenContractAddress;
-    }
-
-    if(req.query.smartTokenContractAddress){
-      filter.smartTokenContractAddress = req.query.smartTokenContractAddress;
-    }
-
-    if(req.query.type){
-      filter.type = req.query.type;
-    }
-
-    let pools = await db.Pools.find(filter).populate('network')
+    let quantumPortalTransactions = await db.QuantumPortalTransactions.find(filter).populate('network')
       .sort({ createdAt: -1 })
       .skip(req.query.offset ? parseInt(req.query.offset) : 0)
       .limit(req.query.limit ? parseInt(req.query.limit) : 10)
 
     return res.http200({
-      pools: pools
+      quantumPortalTransactions: quantumPortalTransactions
     });
 
-  });
+  }));
 
-  router.get('/:id', async (req: any, res: any) => {
+  router.get('/:id', asyncMiddleware(async (req: any, res: any) => {
 
     var filter: any = {}
     filter._id = req.params.id;
 
-    let pool = await db.Pools.findOne(filter);
+    let quantumPortalTransaction = await db.QuantumPortalTransactions.findOne(filter);
 
     return res.http200({
-      pool: pool
+      quantumPortalTransaction: quantumPortalTransaction
     });
 
-  });
+  }));
 
-  router.get('/', async (req: any, res: any) => {
+  router.post('/', asyncMiddleware(async (req: any, res: any) => {
+
+    var filter: any = {}
+
+    let quantumPortalTransaction = await db.QuantumPortalTransactions.create(req.body);
+
+    return res.http200({
+      quantumPortalTransaction: quantumPortalTransaction
+    });
+
+  }));
+
+  router.get('/', asyncMiddleware(async (req: any, res: any) => {
     return res.http200({
       message: 'success'
     });
 
-  });
+  }));
 
 };
