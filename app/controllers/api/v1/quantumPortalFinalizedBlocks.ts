@@ -40,4 +40,17 @@ module.exports = function (router: any) {
 
   }));
 
+  router.delete('/:id', asyncMiddleware(async (req: any, res: any) => {
+
+    var filter: any = {}
+    filter._id = req.params.id;
+
+    let quantumPortalFinalizedBlock = await db.QuantumPortalFinalizedBlocks.remove(filter);
+
+    return res.http200({
+      quantumPortalFinalizedBlock: quantumPortalFinalizedBlock
+    });
+    
+  }));
+
 };
