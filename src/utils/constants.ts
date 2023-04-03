@@ -4,3 +4,8 @@ export const SUPPORTED_NETWORKS = [
   'AVAX_TESTNET',
   'FERRUM_TESTNET',
 ];
+
+export const NETWORK_SEEDED_DATA = {
+  name: 'BSC',
+  rpcUrl: 'https://bsc-dataseed.binance.org/',
+};

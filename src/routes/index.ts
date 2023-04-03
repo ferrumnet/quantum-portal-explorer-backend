@@ -4,6 +4,7 @@ import transactions from './transactions.route';
 import accounts from './accounts.route';
 import networkRoute from './network.route';
 import contractRoute from './contract.route';
+import methodRoute from './method.route';
 
 const router = express.Router();
 
@@ -27,6 +28,10 @@ const defaultRoute = [
   {
     path: '/contract',
     route: contractRoute,
+  },
+  {
+    path: '/method',
+    route: methodRoute,
   },
 ];
 

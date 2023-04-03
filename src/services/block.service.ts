@@ -1,4 +1,7 @@
-import { QuantumPortalMinedBlockModel } from '../models';
+import {
+  QuantumPortalMinedBlockModel,
+  QuantumPortalRemoteTransactoinModel,
+} from '../models';
 import { QuantumPortalMinedBlockDocument } from '../interfaces';
 
 export const getBlockByBlockHash = async (
@@ -15,7 +18,9 @@ export const getBlockByBlockHash = async (
 export const getBlockTxsByBlockHash = async (
   blockHash: string,
 ): Promise<any> => {
-  const blocks = await QuantumPortalMinedBlockModel.find({ blockHash }).sort({
+  const blocks = await QuantumPortalRemoteTransactoinModel.find({
+    blockHash,
+  }).sort({
     timestamp: -1,
   });
 
