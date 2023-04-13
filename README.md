@@ -2,6 +2,12 @@
 
 ## Quick Start
 
+Use the Compatible Node Version:
+
+```bash
+nvm use
+```
+
 Install the dependencies:
 
 ```bash
