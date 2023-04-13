@@ -1,32 +1,51 @@
 import { blockService } from '../services';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
-export const getBlocks = async (req: Request, res: Response): Promise<any> => {
-  const block = await blockService.getRecentBlocks(
-    parseInt(req.query.page as any),
-    parseInt(req.query.limit as any),
-  );
-
-  res.send(block);
+export const getBlocks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<any> => {
+  try {
+    const block = await blockService.getRecentBlocks(
+      parseInt(req.query.page as any),
+      parseInt(req.query.limit as any),
+    );
+    res.send(block);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getBlockByHash = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<any> => {
-  const block = await blockService.getBlockByBlockHash(
-    req.query.networkId as any,
-    req.query.blockHash as any,
-  );
-  res.send(block);
+  try {
+    const block = await blockService.getBlockByBlockHash(
+      req.query.networkId as any,
+      req.query.blockHash as any,
+    );
+    res.send(block);
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const getBlockTxs = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<any> => {
-  const blocks = await blockService.getBlockTxsByBlockHash(
-    req.query.blockHash as string,
-  );
-  res.send(blocks);
+  try {
+    const blocks = await blockService.getBlockTxsByBlockHash(
+      req.query.blockHash as string,
+      parseInt(req.query.page as any),
+      parseInt(req.query.limit as any),
+    );
+    res.send(blocks);
+  } catch (error) {
+    next(error);
+  }
 };

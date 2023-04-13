@@ -6,8 +6,13 @@ import { transactionValidation } from '../validations';
 
 router.get(
   '/',
-  validate(transactionValidation.getTransactions),
-  transactionsController.getTransactions,
+  validate(transactionValidation.getRecentTransactions),
+  transactionsController.getRecentTransactions,
+);
+router.get(
+  '/:txId',
+  validate(transactionValidation.getTransaction),
+  transactionsController.getTransaction,
 );
 
 export default router;

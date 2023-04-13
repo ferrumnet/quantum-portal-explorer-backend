@@ -13,7 +13,6 @@ mongoose
       await Networks.create(NETWORK_SEEDED_DATA);
     }
     const networks = await Networks.find();
-    // console.log(networks);
     (global as any).network = networks;
   })
   .catch(err => {

@@ -12,7 +12,6 @@ const validate =
     const { value, error } = Joi.compile(validSchema)
       .prefs({ errors: { label: 'key' }, abortEarly: false })
       .validate(object);
-
     if (error) {
       const errorMessage = error.details
         .map(details => details.message)

@@ -1,13 +1,31 @@
-import { recentTransactionsService } from '../services';
-import { Request, Response } from 'express';
+import { transactionsService } from '../services';
+import { NextFunction, Request, Response } from 'express';
 
-export const getTransactions = async (
+export const getRecentTransactions = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<any> => {
-  const transactions = await recentTransactionsService.getRecentTxs(
-    req.query.page as any,
-    req.query.limit as any,
-  );
-  res.send(transactions);
+  try {
+    const transactions = await transactionsService.getRecentTxs(
+      req.query.page as any,
+      req.query.limit as any,
+    );
+    res.send(transactions);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTransaction = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<any> => {
+  try {
+    const tx = await transactionsService.getTransaction(req.params.txId);
+    res.send(tx);
+  } catch (error) {
+    next(error);
+  }
 };

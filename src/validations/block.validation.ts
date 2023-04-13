@@ -10,12 +10,14 @@ export const getBlocks = {
 export const getBlockTxs = {
   query: Joi.object().keys({
     blockHash: Joi.string().required(),
+    page: Joi.string().required(),
+    limit: Joi.string().required(),
   }),
 };
 
 export const getBlockByHash = {
   query: Joi.object().keys({
-    networkId: Joi.string().required(),
+    networkId: Joi.string(),
     blockHash: Joi.string().required(),
   }),
 };

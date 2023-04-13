@@ -5,7 +5,7 @@ import { accountValidation } from '../validations';
 import { accountController } from '../controllers';
 
 router.get(
-  '/',
+  '/:address',
   validate(accountValidation.getAccount),
   accountController.getAccount,
 );

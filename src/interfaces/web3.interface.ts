@@ -27,3 +27,20 @@ export interface AbiOutput {
   components?: AbiOutput[];
   internalType?: string;
 }
+
+export interface GasParameters {
+  gasLimit: string;
+  gasPrice: string;
+}
+
+export interface CustomTransactionCallRequest {
+  from: string;
+  currency: string;
+  contract: string;
+  amount: string;
+  data: string;
+  gas: GasParameters;
+  nonce?: number;
+  description?: string;
+  value?: string;
+}

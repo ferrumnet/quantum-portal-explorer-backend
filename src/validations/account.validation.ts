@@ -1,7 +1,7 @@
 import Joi from 'joi';
 
 export const getAccount = {
-  query: Joi.object().keys({
+  params: Joi.object().keys({
     address: Joi.string().required(),
   }),
 };

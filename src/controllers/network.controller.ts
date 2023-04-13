@@ -1,10 +1,15 @@
 import { networkService } from '../services';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 
 export const supportedNetwork = async (
   req: Request,
   res: Response,
+  next: NextFunction,
 ): Promise<any> => {
-  const supportedNetworks = await networkService.getSupportedNetworks();
-  res.send({ supportedNetworks });
+  try {
+    const supportedNetworks = await networkService.getSupportedNetworks();
+    res.send({ supportedNetworks });
+  } catch (error) {
+    next(error);
+  }
 };

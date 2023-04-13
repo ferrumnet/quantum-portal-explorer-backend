@@ -1,5 +1,6 @@
 import Web3 from 'web3';
 import { AbiItem } from '../interfaces';
+import { CustomTransactionCallRequest } from '../interfaces/web3.interface';
 
 export const callMethod = async (
   network: string,
@@ -9,12 +10,10 @@ export const callMethod = async (
   args: string[],
 ): Promise<any> => {
   const data = (global as any).network;
-  console.log({ data });
   let rpcUrl = '';
   data.map((item: any) => {
     if (network === item.name) {
       rpcUrl = item.rpcUrl.toString();
-      console.log(rpcUrl);
     }
   });
   const web3 = new Web3(rpcUrl);
@@ -38,27 +37,27 @@ export const methodGetTransaction = async (
   method: string,
   args: string[],
   from: string,
-): Promise<any> => {
+): Promise<CustomTransactionCallRequest> => {
   const data = (global as any).network;
-  console.log({ data });
   let rpcUrl = '';
   data.map((item: any) => {
     if (network === item.name) {
       rpcUrl = item.rpcUrl.toString();
-      console.log(rpcUrl);
     }
   });
   const web3 = new Web3(rpcUrl);
   const contract = new web3.eth.Contract(abi, contractAddress);
   const p = contract.methods[method](...args);
-  // const nonce = await web3(rpcUrl).getTransactionCount(from, 'pending');
-  // return callRequest(
-  //   contractAddress,
-  //   "",
-  //   from,
-  //   p.encodeABI(),
-  //   undefined,
-  //   nonce,
-  //   `Custom Transaction`
-  // );
+  const nonce = await web3.eth.getTransactionCount(from, 'pending');
+
+  return {
+    currency: '',
+    from,
+    amount: '0',
+    contract: contractAddress,
+    data: p.encodeABI(),
+    gas: { gasPrice: '0', gasLimit: undefined },
+    nonce,
+    description: `Custom Transaction`,
+  };
 };
