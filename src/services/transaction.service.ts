@@ -1,9 +1,13 @@
 import { QuantumPortalRemoteTransactoinModel } from '../models';
+import {
+  IGetTransactionResponse,
+  QuantumPortalRemoteTransaction,
+} from '../interfaces';
 
 export const getRecentTxs = async (
   page: number,
   limit: number,
-): Promise<any> => {
+): Promise<IGetTransactionResponse> => {
   const docsPromise = QuantumPortalRemoteTransactoinModel.find()
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
@@ -26,7 +30,9 @@ export const getRecentTxs = async (
   return result;
 };
 
-export const getTransaction = async (txId: string): Promise<any> => {
+export const getTransaction = async (
+  txId: string,
+): Promise<QuantumPortalRemoteTransaction> => {
   const tx = await QuantumPortalRemoteTransactoinModel.findOne({
     hash: txId,
   }).sort({

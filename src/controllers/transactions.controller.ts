@@ -5,7 +5,7 @@ export const getRecentTransactions = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<any> => {
+): Promise<void> => {
   try {
     const transactions = await transactionsService.getRecentTxs(
       req.query.page as any,
@@ -21,7 +21,7 @@ export const getTransaction = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<any> => {
+): Promise<void> => {
   try {
     const tx = await transactionsService.getTransaction(req.params.txId);
     res.send(tx);

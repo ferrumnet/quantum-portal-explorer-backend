@@ -1,4 +1,4 @@
-import { QuantumPortalRemoteTransactoin } from './QuantumPortalRemoteTransaction.interface';
+import { QuantumPortalRemoteTransaction } from './QuantumPortalRemoteTransaction.interface';
 
 export interface QuantumPortalBlockFinalization {
   timestamp: number;
@@ -19,6 +19,14 @@ export interface QuantumPortalMinedBlockDocument {
   minerId: string;
   stake: string;
   totalValue: string;
-  transactions: QuantumPortalRemoteTransactoin[];
+  transactions: QuantumPortalRemoteTransaction[];
   transactionCount: number;
+}
+
+export interface IGetBlocksResponse {
+  results: QuantumPortalMinedBlockDocument[];
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalResults: number;
 }
