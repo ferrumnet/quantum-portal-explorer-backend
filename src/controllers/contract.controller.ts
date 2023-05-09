@@ -5,7 +5,7 @@ export const registerContract = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<any> => {
+): Promise<void> => {
   try {
     const contract = await contractService.registerContract(
       req.body.networks as any,

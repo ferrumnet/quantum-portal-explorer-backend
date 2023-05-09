@@ -5,7 +5,7 @@ export const callMethod = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<any> => {
+): Promise<void> => {
   try {
     const callMethodOnContract = await methodService.callMethod(
       req.query.network as string,
@@ -24,7 +24,7 @@ export const methodGetTransaction = async (
   req: Request,
   res: Response,
   next: NextFunction,
-): Promise<any> => {
+): Promise<void> => {
   try {
     const methodTransaction = await methodService.methodGetTransaction(
       req.query.network as string,

@@ -2,7 +2,11 @@ import {
   QuantumPortalMinedBlockModel,
   QuantumPortalRemoteTransactoinModel,
 } from '../models';
-import { QuantumPortalMinedBlockDocument } from '../interfaces';
+import {
+  IGetBlocksResponse,
+  IGetTransactionResponse,
+  QuantumPortalMinedBlockDocument,
+} from '../interfaces';
 
 export const getBlockByBlockHash = async (
   networkId: string,
@@ -22,7 +26,7 @@ export const getBlockTxsByBlockHash = async (
   blockHash: string,
   page: number,
   limit: number,
-): Promise<any> => {
+): Promise<IGetTransactionResponse> => {
   const docsPromise = await QuantumPortalRemoteTransactoinModel.find({
     blockHash,
   })
@@ -50,7 +54,7 @@ export const getBlockTxsByBlockHash = async (
 export const getRecentBlocks = async (
   page: number,
   limit: number,
-): Promise<any> => {
+): Promise<IGetBlocksResponse> => {
   const docsPromise = await QuantumPortalMinedBlockModel.find()
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)

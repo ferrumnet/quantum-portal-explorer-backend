@@ -3,15 +3,14 @@ import {
   QuantumPortalRemoteTransactoinModel,
   QuantumPortalContractObjectModel,
 } from '../models';
-import { QuantumPortalAccount } from '../interfaces';
+import { IGetTransactionResponse, QuantumPortalAccount } from '../interfaces';
 import ApiError from '../utils/ApiError';
 import httpStatus from 'http-status';
 
 export const accountTransactions = async (
-  address: string,
   page: number = 0,
   limit: number = 10,
-): Promise<any> => {
+): Promise<IGetTransactionResponse> => {
   const docsPromise = QuantumPortalRemoteTransactoinModel.find()
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)

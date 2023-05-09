@@ -2,4 +2,4 @@ export { QuantumPortalAccountModel } from './quantumPortalAccount.model';
 export { QuantumPortalContractObjectModel } from './quantumPortalContract.model';
 export { QuantumPortalMinedBlockModel } from './quantumPortalMinedBlock.model';
 export { QuantumPortalRemoteTransactoinModel } from './quantumPortalRemoteTransaction.model';
-export { Networks } from './network.model';
+export { QuantumPortalNetworkModel } from './quantumPortalAccount.network.model';

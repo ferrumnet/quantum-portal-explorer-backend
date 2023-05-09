@@ -9,7 +9,7 @@ export const callMethod = async (
   method: string,
   args: string[],
 ): Promise<any> => {
-  const data = (global as any).network;
+  const data = (global as any).networks;
   let rpcUrl = '';
   data.map((item: any) => {
     if (network === item.name) {
@@ -38,7 +38,7 @@ export const methodGetTransaction = async (
   args: string[],
   from: string,
 ): Promise<CustomTransactionCallRequest> => {
-  const data = (global as any).network;
+  const data = (global as any).networks;
   let rpcUrl = '';
   data.map((item: any) => {
     if (network === item.name) {

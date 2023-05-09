@@ -1,4 +1,4 @@
-import { AbiItem } from './index';
+import { AbiItem } from './web3.interface';
 
 export interface QuantumPortalContractObject {
   contractId: string;

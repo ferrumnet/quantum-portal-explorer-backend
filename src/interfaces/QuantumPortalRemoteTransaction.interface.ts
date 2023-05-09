@@ -15,3 +15,11 @@ export interface QuantumPortalRemoteTransaction {
   blockHash: string;
   blockIdx: number;
 }
+
+export interface IGetTransactionResponse {
+  results: QuantumPortalRemoteTransaction[];
+  page: number;
+  limit: number;
+  totalPages: number;
+  totalResults: number;
+}

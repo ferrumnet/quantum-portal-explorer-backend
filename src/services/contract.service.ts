@@ -18,7 +18,7 @@ export const registerContract = async (
   networks: string,
   contractAddress: string,
   contract: QuantumPortalContractObject,
-): Promise<any> => {
+): Promise<QuantumPortalContractObject | QuantumPortalAccount> => {
   contractAddress = contractAddress.toLowerCase();
   const contractId = sha256sync(
     contract.deployedBytecode.toLowerCase().replace('0x', ''),
