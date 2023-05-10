@@ -10,7 +10,8 @@ router
   .post(
     validate(networkValidation.createNetwork),
     networkController.createNetwork,
-  );
+  )
+  .get(networkController.getAllNetworks);
 
 router
   .route('/:id')

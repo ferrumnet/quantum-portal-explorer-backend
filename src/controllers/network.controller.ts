@@ -14,6 +14,19 @@ export const createNetwork = async (
   }
 };
 
+export const getAllNetworks = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const networks = await networkService.getAllNetworks(req.params.id as any);
+    res.send(networks);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getNetwork = async (
   req: Request,
   res: Response,

@@ -1,4 +1,4 @@
-import { AbiItem } from './index';
+import { AbiItem } from 'web3-utils';
 
 export interface QuantumPortalAccountBalance {
   tokenId: string;
