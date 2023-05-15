@@ -26,11 +26,11 @@ const defaultRoute = [
     route: networkRoute,
   },
   {
-    path: '/contract',
+    path: '/contracts',
     route: contractRoute,
   },
   {
-    path: '/method',
+    path: '/methods',
     route: methodRoute,
   },
 ];

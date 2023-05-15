@@ -1,19 +1,24 @@
 import { QuantumPortalRemoteTransactoinModel } from '../models';
 import {
-  IGetTransactionResponse,
+  ITransactionListResponse,
   QuantumPortalRemoteTransaction,
 } from '../interfaces';
 
-export const getRecentTxs = async (
+export const getTxs = async (
   page: number,
   limit: number,
-): Promise<IGetTransactionResponse> => {
-  const docsPromise = QuantumPortalRemoteTransactoinModel.find()
+  address?: string,
+): Promise<ITransactionListResponse> => {
+  const query: any = {};
+  if (address) {
+    query.$or = [{ sourceMsgSender: address }, { remoteContract: address }];
+  }
+  const docsPromise = QuantumPortalRemoteTransactoinModel.find(query)
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
   const countPromise =
-    QuantumPortalRemoteTransactoinModel.countDocuments().exec();
+    QuantumPortalRemoteTransactoinModel.countDocuments(query).exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,

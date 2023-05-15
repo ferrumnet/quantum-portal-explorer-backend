@@ -1,15 +1,16 @@
 import { transactionsService } from '../services';
 import { NextFunction, Request, Response } from 'express';
 
-export const getRecentTransactions = async (
+export const getTransactions = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const transactions = await transactionsService.getRecentTxs(
+    const transactions = await transactionsService.getTxs(
       req.query.page as any,
       req.query.limit as any,
+      req.query.address as any,
     );
     res.send(transactions);
   } catch (error) {

@@ -1,7 +1,8 @@
 import Joi from 'joi';
 
-export const getRecentTransactions = {
+export const getTransactions = {
   query: Joi.object().keys({
+    address: Joi.string().allow(''),
     page: Joi.number().required(),
     limit: Joi.number().required(),
   }),

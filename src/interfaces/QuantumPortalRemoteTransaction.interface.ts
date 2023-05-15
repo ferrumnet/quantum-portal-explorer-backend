@@ -16,7 +16,7 @@ export interface QuantumPortalRemoteTransaction {
   blockIdx: number;
 }
 
-export interface IGetTransactionResponse {
+export interface ITransactionListResponse {
   results: QuantumPortalRemoteTransaction[];
   page: number;
   limit: number;
