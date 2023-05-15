@@ -23,7 +23,7 @@ export interface QuantumPortalMinedBlockDocument {
   transactionCount: number;
 }
 
-export interface IGetBlocksResponse {
+export interface IBlockListResponse {
   results: QuantumPortalMinedBlockDocument[];
   page: number;
   limit: number;

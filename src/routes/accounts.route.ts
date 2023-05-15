@@ -9,11 +9,11 @@ router.get(
   validate(accountValidation.getAccount),
   accountController.getAccount,
 );
-router.get(
-  '/account-transactions',
-  validate(accountValidation.getAccountTransactions),
-  accountController.getAccountTransactions,
-);
+// router.get(
+//   '/account-transactions',
+//   validate(accountValidation.getAccountTransactions),
+//   accountController.getAccountTransactions,
+// );
 router.get(
   '/account-balances',
   validate(accountValidation.getAccountBalances),

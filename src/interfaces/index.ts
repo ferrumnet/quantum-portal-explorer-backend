@@ -5,14 +5,14 @@ export {
 } from './QuantumPortalAccount.interface';
 
 export {
-  IGetBlocksResponse,
+  IBlockListResponse,
   QuantumPortalBlockFinalization,
   QuantumPortalMinedBlockDocument,
 } from './QuantumPortalMinedBlock.interface';
 
 export {
   QuantumPortalRemoteTransaction,
-  IGetTransactionResponse,
+  ITransactionListResponse,
 } from './QuantumPortalRemoteTransaction.interface';
 
 export { QuantumPortalBalance } from './QuantumPortalBalance.interface';

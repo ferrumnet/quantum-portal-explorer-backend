@@ -7,43 +7,32 @@ const getNetworkById = async (id: ObjectId) => {
 };
 
 export const createNetwork = async (network: any): Promise<any> => {
-  try {
-    const setNetwork = await QuantumPortalNetworkModel.insertMany(network);
-    return setNetwork;
-  } catch (error) {
-    console.error(error);
-  }
+  const setNetwork = await QuantumPortalNetworkModel.insertMany(network);
+  return setNetwork;
+};
+
+export const getAllNetworks = async (id: ObjectId): Promise<INetwork[]> => {
+  const networks = await QuantumPortalNetworkModel.find();
+  return networks;
 };
 
 export const getNetwork = async (id: ObjectId): Promise<INetwork> => {
-  try {
-    const getNetwork = await QuantumPortalNetworkModel.findById(id);
-    return getNetwork;
-  } catch (error) {
-    console.error(error);
-  }
+  const network = await QuantumPortalNetworkModel.findById(id);
+  return network;
 };
 
 export const deleteNetwork = async (networkId: ObjectId): Promise<INetwork> => {
-  try {
-    const network = await getNetworkById(networkId);
-    await (network as any).deleteOne();
-    return network;
-  } catch (error) {
-    console.error(error);
-  }
+  const network = await getNetworkById(networkId);
+  await (network as any).deleteOne();
+  return network;
 };
 
 export const updateNetwork = async (
   networkId: ObjectId,
   updateBody: any,
 ): Promise<INetwork> => {
-  try {
-    const network = await getNetworkById(networkId);
-    Object.assign(network, updateBody);
-    await network.save();
-    return network;
-  } catch (err) {
-    console.error(err);
-  }
+  const network = await getNetworkById(networkId);
+  Object.assign(network, updateBody);
+  await network.save();
+  return network;
 };

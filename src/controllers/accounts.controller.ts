@@ -14,21 +14,21 @@ export const getAccount = async (
   }
 };
 
-export const getAccountTransactions = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
-    const accountTransactions = await accountService.accountTransactions(
-      req.query.page as any,
-      req.query.limit as any,
-    );
-    res.send(accountTransactions);
-  } catch (error) {
-    next(error);
-  }
-};
+// export const getAccountTransactions = async (
+//   req: Request,
+//   res: Response,
+//   next: NextFunction,
+// ): Promise<void> => {
+//   try {
+//     const accountTransactions = await accountService.accountTransactions(
+//       req.query.page as any,
+//       req.query.limit as any,
+//     );
+//     res.send(accountTransactions);
+//   } catch (error) {
+//     next(error);
+//   }
+// };
 
 export const getBalances = async (
   req: Request,
