@@ -40,8 +40,6 @@ export const getTransaction = async (
 ): Promise<QuantumPortalRemoteTransaction> => {
   const tx = await QuantumPortalRemoteTransactoinModel.findOne({
     hash: txId,
-  }).sort({
-    timestamp: -1,
   });
   return tx;
 };

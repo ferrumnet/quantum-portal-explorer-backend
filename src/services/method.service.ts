@@ -30,7 +30,7 @@ export const callMethod = async (
   return rv;
 };
 
-export const methodGetTransaction = async (
+export const getMethod = async (
   network: string,
   contractAddress: string,
   abi: AbiItem,

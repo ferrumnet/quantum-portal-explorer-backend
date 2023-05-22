@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { methodService } from '../services';
 
-export const callMethod = async (
+export const contractCallMethod = async (
   req: Request,
   res: Response,
   next: NextFunction,
@@ -20,13 +20,13 @@ export const callMethod = async (
   }
 };
 
-export const methodGetTransaction = async (
+export const contractGetMethod = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const methodTransaction = await methodService.methodGetTransaction(
+    const methodTransaction = await methodService.getMethod(
       req.query.network as string,
       req.query.contractAddress as string,
       req.query.abi as any,
