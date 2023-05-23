@@ -4,9 +4,15 @@ import helmet from 'helmet';
 import router from './routes';
 import httpStatus from 'http-status';
 import ApiError from './utils/ApiError';
+import { successHandler, errorHandler } from './config/morgan';
 import { errorConverter, errorHandlers } from './middlewares/error.middleware';
 
 const app: Application = express();
+
+// HTTP request logger middleware
+app.use(successHandler);
+app.use(errorHandler);
+
 // set security HTTP headers
 app.use(helmet());
 

@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { AbiItem } from '../interfaces';
 import { CustomTransactionCallRequest } from '../interfaces/web3.interface';
 
-export const callMethod = async (
+export const getMethod = async (
   network: string,
   contractAddress: string,
   abi: AbiItem,
@@ -30,7 +30,7 @@ export const callMethod = async (
   return rv;
 };
 
-export const getMethod = async (
+export const callMethod = async (
   network: string,
   contractAddress: string,
   abi: AbiItem,
