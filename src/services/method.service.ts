@@ -2,7 +2,7 @@ import Web3 from 'web3';
 import { AbiItem } from '../interfaces';
 import { CustomTransactionCallRequest } from '../interfaces/web3.interface';
 
-export const callMethod = async (
+export const getMethod = async (
   network: string,
   contractAddress: string,
   abi: AbiItem,
@@ -11,7 +11,7 @@ export const callMethod = async (
 ): Promise<any> => {
   const data = (global as any).networks;
   let rpcUrl = '';
-  data.map((item: any) => {
+  data.forEach((item: any) => {
     if (network === item.name) {
       rpcUrl = item.rpcUrl.toString();
     }
@@ -30,7 +30,7 @@ export const callMethod = async (
   return rv;
 };
 
-export const methodGetTransaction = async (
+export const callMethod = async (
   network: string,
   contractAddress: string,
   abi: AbiItem,
@@ -40,7 +40,7 @@ export const methodGetTransaction = async (
 ): Promise<CustomTransactionCallRequest> => {
   const data = (global as any).networks;
   let rpcUrl = '';
-  data.map((item: any) => {
+  data.forEach((item: any) => {
     if (network === item.name) {
       rpcUrl = item.rpcUrl.toString();
     }

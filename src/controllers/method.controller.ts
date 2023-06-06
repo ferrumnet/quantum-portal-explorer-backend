@@ -1,40 +1,41 @@
 import { NextFunction, Request, Response } from 'express';
 import { methodService } from '../services';
+import { AbiItem } from '../interfaces';
 
-export const callMethod = async (
+export const contractCallMethod = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const callMethodOnContract = await methodService.callMethod(
-      req.query.network as string,
-      req.query.contractAddress as string,
-      req.query.abi as any,
-      req.query.method as string,
-      req.query.args as any,
+    const response = await methodService.callMethod(
+      req.body.network,
+      req.body.contractAddress,
+      req.body.abi as AbiItem,
+      req.body.method,
+      req.body.args,
+      req.body.from,
     );
-    res.send(callMethodOnContract);
+    res.send(response);
   } catch (error) {
     next(error);
   }
 };
 
-export const methodGetTransaction = async (
+export const contractGetMethod = async (
   req: Request,
   res: Response,
   next: NextFunction,
 ): Promise<void> => {
   try {
-    const methodTransaction = await methodService.methodGetTransaction(
-      req.query.network as string,
-      req.query.contractAddress as string,
-      req.query.abi as any,
-      req.query.method as string,
-      req.query.args as string[],
-      req.query.from as string,
+    const response = await methodService.getMethod(
+      req.body.network,
+      req.body.contractAddress,
+      req.body.abi,
+      req.body.method,
+      req.body.args,
     );
-    res.send(methodTransaction);
+    res.send(response);
   } catch (error) {
     next(error);
   }
