@@ -11,7 +11,7 @@ export const getMethod = async (
 ): Promise<any> => {
   const data = (global as any).networks;
   let rpcUrl = '';
-  data.map((item: any) => {
+  data.forEach((item: any) => {
     if (network === item.name) {
       rpcUrl = item.rpcUrl.toString();
     }
@@ -40,7 +40,7 @@ export const callMethod = async (
 ): Promise<CustomTransactionCallRequest> => {
   const data = (global as any).networks;
   let rpcUrl = '';
-  data.map((item: any) => {
+  data.forEach((item: any) => {
     if (network === item.name) {
       rpcUrl = item.rpcUrl.toString();
     }

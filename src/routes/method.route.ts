@@ -2,7 +2,7 @@ import express from 'express';
 const router = express.Router();
 import { methodController } from '../controllers';
 
-router.get('/write', methodController.contractCallMethod);
-router.get('/read', methodController.contractGetMethod);
+router.post('/write', methodController.contractCallMethod);
+router.post('/read', methodController.contractGetMethod);
 
 export default router;
