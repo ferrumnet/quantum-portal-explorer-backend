@@ -21,6 +21,6 @@ const quantumPortalRemoteTransactoinSchema = new Schema<
   blockIdx: Number,
 });
 
-export const QuantumPortalRemoteTransactoinModel = mongoose.model<
+export const QuantumPortalRemoteTransactionModel = mongoose.model<
   QuantumPortalRemoteTransaction & Document
 >('quantumPortalRemoteTransactoin', quantumPortalRemoteTransactoinSchema);
