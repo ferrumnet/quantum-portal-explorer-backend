@@ -1,6 +1,6 @@
 import {
   QuantumPortalMinedBlockModel,
-  QuantumPortalRemoteTransactoinModel,
+  QuantumPortalRemoteTransactionModel,
 } from '../models';
 import {
   IBlockListResponse,
@@ -27,14 +27,14 @@ export const getBlockTxsByBlockHash = async (
   page: number,
   limit: number,
 ): Promise<ITransactionListResponse> => {
-  const docsPromise = await QuantumPortalRemoteTransactoinModel.find({
+  const docsPromise = await QuantumPortalRemoteTransactionModel.find({
     blockHash,
   })
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
   const countPromise =
-    QuantumPortalRemoteTransactoinModel.countDocuments().exec();
+    QuantumPortalRemoteTransactionModel.countDocuments().exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,
@@ -60,7 +60,7 @@ export const getRecentBlocks = async (
     .skip((page - 1) * limit)
     .limit(limit);
   const countPromise =
-    QuantumPortalRemoteTransactoinModel.countDocuments().exec();
+    QuantumPortalRemoteTransactionModel.countDocuments().exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,

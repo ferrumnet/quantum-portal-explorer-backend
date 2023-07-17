@@ -27,6 +27,21 @@ export const getAllNetworks = async (
   }
 };
 
+export const getNetworkByName = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const getNetwork = await networkService.getNetworkByQuery({
+      name: (req.query.name as string).toUpperCase(),
+    });
+    res.send(getNetwork);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getNetwork = async (
   req: Request,
   res: Response,

@@ -16,6 +16,11 @@ export const getAllNetworks = async (id: ObjectId): Promise<INetwork[]> => {
   return networks;
 };
 
+export const getNetworkByQuery = async (query: Object): Promise<INetwork> => {
+  const network = await QuantumPortalNetworkModel.findOne(query);
+  return network;
+};
+
 export const getNetwork = async (id: ObjectId): Promise<INetwork> => {
   const network = await QuantumPortalNetworkModel.findById(id);
   return network;

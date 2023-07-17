@@ -4,6 +4,7 @@ import { INetwork } from '../interfaces';
 const networkSchema = new Schema<INetwork>({
   _id: String,
   name: String,
+  chainId: Number,
   rpcUrl: String,
 });
 

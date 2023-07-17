@@ -1,6 +1,6 @@
 import {
   QuantumPortalAccountModel,
-  QuantumPortalRemoteTransactoinModel,
+  QuantumPortalRemoteTransactionModel,
   QuantumPortalContractObjectModel,
 } from '../models';
 import { ITransactionListResponse, QuantumPortalAccount } from '../interfaces';
@@ -11,12 +11,12 @@ import { ITransactionListResponse, QuantumPortalAccount } from '../interfaces';
 //   page: number = 0,
 //   limit: number = 10,
 // ): Promise<ITransactionListResponse> => {
-//   const docsPromise = QuantumPortalRemoteTransactoinModel.find()
+//   const docsPromise = QuantumPortalRemoteTransactionModel.find()
 //     .sort({ timestamp: -1 })
 //     .skip((page - 1) * limit)
 //     .limit(limit);
 //   const countPromise =
-//     QuantumPortalRemoteTransactoinModel.countDocuments().exec();
+//     QuantumPortalRemoteTransactionModel.countDocuments().exec();
 
 //   const [totalResults, results] = await Promise.all([
 //     countPromise,

@@ -14,8 +14,14 @@ router
   .get(networkController.getAllNetworks);
 
 router
+  .route('/network-name')
+  .get(
+    validate(networkValidation.getNetworkByName),
+    networkController.getNetworkByName,
+  );
+router
   .route('/:id')
-  .get(validate(networkValidation.createNetwork), networkController.getNetwork)
+  .get(validate(networkValidation.getNetwork), networkController.getNetwork)
   .patch(
     validate(networkValidation.updateNetwork),
     networkController.updateNetwork,

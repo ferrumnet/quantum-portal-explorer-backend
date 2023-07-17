@@ -10,6 +10,12 @@ export const createNetwork = {
   ),
 };
 
+export const getNetworkByName = {
+  query: Joi.object().keys({
+    name: Joi.string().required(),
+  }),
+};
+
 export const getNetwork = {
   params: Joi.object().keys({
     id: Joi.custom(objectId).required(),
