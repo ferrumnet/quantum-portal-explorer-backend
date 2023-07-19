@@ -9,8 +9,8 @@ import {
 } from '../interfaces';
 
 export const getBlockByBlockHash = async (
-  networkId: string,
-  blockHash?: string,
+  blockHash: string,
+  networkId?: string,
 ): Promise<QuantumPortalMinedBlockDocument> => {
   const filter: { networkId?: string; blockHash: string } = {
     blockHash: blockHash,
