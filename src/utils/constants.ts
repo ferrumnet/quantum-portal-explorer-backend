@@ -9,3 +9,7 @@ export const NETWORK_SEEDED_DATA = {
   name: 'BSC',
   rpcUrl: 'https://bsc-dataseed.binance.org/',
 };
+
+export const isTransactionOrBlockHash = (addr: string) => {
+  return /^0x([A-Fa-f0-9]{64})$/.test(addr);
+};

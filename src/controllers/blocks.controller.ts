@@ -24,8 +24,8 @@ export const getBlockByHash = async (
 ): Promise<void> => {
   try {
     const block = await blockService.getBlockByBlockHash(
-      req.query.networkId as any,
       req.query.blockHash as any,
+      req.query.networkId as any,
     );
     res.send(block);
   } catch (error) {
