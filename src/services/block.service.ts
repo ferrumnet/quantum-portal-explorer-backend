@@ -22,6 +22,13 @@ export const getBlockByBlockHash = async (
   return block;
 };
 
+export const getBlockByQuery = async (
+  query: Object,
+): Promise<QuantumPortalMinedBlockDocument[]> => {
+  const block = await QuantumPortalMinedBlockModel.find(query);
+  return block;
+};
+
 export const getBlockTxsByBlockHash = async (
   blockHash: string,
   page: number,
