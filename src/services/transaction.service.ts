@@ -43,3 +43,10 @@ export const getTransaction = async (
   });
   return tx;
 };
+
+export const getTransactionByQuery = async (
+  query: Object,
+): Promise<QuantumPortalRemoteTransaction[]> => {
+  const tx = await QuantumPortalRemoteTransactionModel.find(query);
+  return tx;
+};
