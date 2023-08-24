@@ -44,9 +44,39 @@ export const getTransaction = async (
   return tx;
 };
 
+export const getAllTransactions = async (
+  page: number,
+  limit: number,
+  queryData: any,
+): Promise<ITransactionListResponse> => {
+  const docsPromise = QuantumPortalRemoteTransactionModel.find(queryData)
+    .sort({ timestamp: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  const countPromise = await QuantumPortalRemoteTransactionModel.countDocuments(
+    queryData,
+  ).exec();
+
+  const [totalResults, results] = await Promise.all([
+    countPromise,
+    docsPromise,
+  ]);
+
+  const totalPages = Math.ceil(totalResults / limit);
+  const result = {
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+  return result;
+};
+
 export const getTransactionByQuery = async (
   query: Object,
-): Promise<QuantumPortalRemoteTransaction[]> => {
-  const tx = await QuantumPortalRemoteTransactionModel.find(query);
+): Promise<QuantumPortalRemoteTransaction> => {
+  const tx = await QuantumPortalRemoteTransactionModel.findOne(query);
   return tx;
 };

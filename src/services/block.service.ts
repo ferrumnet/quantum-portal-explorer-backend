@@ -24,8 +24,8 @@ export const getBlockByBlockHash = async (
 
 export const getBlockByQuery = async (
   query: Object,
-): Promise<QuantumPortalMinedBlockDocument[]> => {
-  const block = await QuantumPortalMinedBlockModel.find(query);
+): Promise<QuantumPortalMinedBlockDocument> => {
+  const block = await QuantumPortalMinedBlockModel.findOne(query);
   return block;
 };
 
@@ -68,6 +68,34 @@ export const getRecentBlocks = async (
     .limit(limit);
   const countPromise =
     QuantumPortalRemoteTransactionModel.countDocuments().exec();
+
+  const [totalResults, results] = await Promise.all([
+    countPromise,
+    docsPromise,
+  ]);
+  const totalPages = Math.ceil(totalResults / limit);
+  const result = {
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+  return result;
+};
+
+export const getAllBlocks = async (
+  page: number,
+  limit: number,
+  queryData: any,
+): Promise<IBlockListResponse> => {
+  const docsPromise = await QuantumPortalMinedBlockModel.find(queryData)
+    .sort({ timestamp: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+
+  const countPromise =
+    QuantumPortalMinedBlockModel.countDocuments(queryData).exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,
