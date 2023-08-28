@@ -35,7 +35,7 @@ export const searchData = async (
       queryData.timestamp = req.query.toDate;
     }
 
-    // ==> First Case: (only data)
+    // ==> First Case: only data + no filters + no type
     if (req.query.data && !Object.keys(queryData).length && !type) {
       if (
         Web3.utils.isHex(req.query.data as string) &&
@@ -49,12 +49,20 @@ export const searchData = async (
             req.query.data as string,
           );
         }
+        if (!hash) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(hash);
       } else if (Web3.utils.isAddress(req.query.data as string)) {
         const account = await accountService.getAccount(
           req.query.data as string,
         );
+        if (!account) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(account);
+      } else {
+        return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
       }
     }
 
@@ -68,7 +76,9 @@ export const searchData = async (
         hash = await transactionsService.getTransaction(
           req.query.data as string,
         );
-
+        if (!hash) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(hash);
       } else if (
         type === 'blocks' &&
@@ -76,7 +86,12 @@ export const searchData = async (
         isTransactionOrBlockHash(req.query.data as string)
       ) {
         hash = await blockService.getBlockByBlockHash(req.query.data as string);
+        if (!hash) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(hash);
+      } else {
+        return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
       }
     }
 
@@ -89,6 +104,9 @@ export const searchData = async (
       ) {
         queryData.hash = req.query.data;
         hash = await transactionsService.getTransactionByQuery(queryData);
+        if (!hash) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(hash);
       } else if (
         type === 'blocks' &&
@@ -97,6 +115,9 @@ export const searchData = async (
       ) {
         queryData.blockHash = req.query.data;
         hash = await blockService.getBlockByQuery(queryData);
+        if (!hash) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(hash);
       }
     }
@@ -111,16 +132,24 @@ export const searchData = async (
         if (!hash) {
           hash = await blockService.getBlockByQuery(queryData);
         }
+        if (!hash) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(hash);
       } else if (Web3.utils.isAddress(req.query.data as string)) {
         const account = await accountService.getAccount(
           req.query.data as string,
         );
+        if (!account) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(account);
+      } else {
+        return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
       }
     }
 
-    // 5th Case: no data + if filters + type
+    // 5th Case: no data + (if) filters + type
     else if (!req.query.data && type) {
       if (type === 'transactions') {
         const txs = await transactionsService.getAllTransactions(
@@ -128,9 +157,15 @@ export const searchData = async (
           limit,
           queryData,
         );
+        if (!Object.keys(txs).length) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(txs);
       } else if (type === 'blocks') {
         const blocks = await blockService.getAllBlocks(page, limit, queryData);
+        if (!Object.keys(blocks).length) {
+          return next(new ApiError(httpStatus.BAD_REQUEST, 'Not Found'));
+        }
         res.send(blocks);
       }
     }
