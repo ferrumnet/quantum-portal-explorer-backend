@@ -1,14 +1,17 @@
 import Joi from 'joi';
+import { isTransactionOrBlockHashOrAddress } from './custom';
 
 export const searchData = {
-  query: Joi.object().keys({
-    data: Joi.string().trim().allow(''),
-    fromNetwork: Joi.string().allow(''),
-    toNetwork: Joi.string().allow(''),
-    fromDate: Joi.string().allow(''),
-    toDate: Joi.string().allow(''),
-    type: Joi.string().allow(''),
-    page: Joi.string().required(),
-    limit: Joi.string().required(),
-  }),
+  query: Joi.object()
+    .keys({
+      data: Joi.string().custom(isTransactionOrBlockHashOrAddress).allow(''),
+      fromNetwork: Joi.string().allow(''),
+      toNetwork: Joi.string().allow(''),
+      fromDate: Joi.string().allow(''),
+      toDate: Joi.string().allow(''),
+      type: Joi.string().allow(''),
+      page: Joi.string().default(1),
+      limit: Joi.number().default(20),
+    })
+    .or('data', 'type'),
 };
