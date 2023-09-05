@@ -1,3 +1,5 @@
+import Web3 from 'web3';
+
 export const objectId = (value: string, helpers: any) => {
   if (!value.match(/^[0-9a-fA-F]{24}$/)) {
     return helpers.message('"{{#label}}" must be a valid mongo id');
@@ -15,4 +17,18 @@ export const password = (value: string, helpers: any) => {
     );
   }
   return value;
+};
+
+export const isTransactionOrBlockHashOrAddress = (
+  addr: string,
+  helpers: any,
+) => {
+  if (
+    /^0x([A-Fa-f0-9]{64})$/.test(addr) ||
+    Web3.utils.isAddress(addr as string)
+  ) {
+    return addr;
+  } else {
+    return helpers.message('Invalid Hash or Address');
+  }
 };
