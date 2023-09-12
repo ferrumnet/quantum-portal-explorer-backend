@@ -3,6 +3,7 @@ import {
   ITransactionListResponse,
   QuantumPortalRemoteTransaction,
 } from '../interfaces';
+import { chartData } from '../interfaces/QuantumPortalRemoteTransaction.interface';
 
 export const getTxs = async (
   page: number,
@@ -74,9 +75,58 @@ export const getAllTransactions = async (
   return result;
 };
 
+export const getDataForChart = async (
+  startDate: any,
+  endDate: any,
+): Promise<chartData[]> => {
+  const result = QuantumPortalRemoteTransactionModel.aggregate([
+    {
+      $match: {
+        timestamp: {
+          $gte: startDate,
+          $lte: endDate,
+        },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          $dateToString: {
+            format: '%d/%m/%Y',
+            date: { $toDate: { $multiply: ['$timestamp', 1000] } }, // Convert timestamp to milliseconds
+          },
+        },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        date: '$_id',
+        count: 1,
+      },
+    },
+    {
+      $sort: {
+        date: 1,
+      },
+    },
+  ]);
+  return result;
+};
+
 export const getTransactionByQuery = async (
   query: Object,
 ): Promise<QuantumPortalRemoteTransaction> => {
   const tx = await QuantumPortalRemoteTransactionModel.findOne(query);
   return tx;
+};
+
+export const totalTransactions = async (): Promise<Number> => {
+  const countPromise = await QuantumPortalRemoteTransactionModel.countDocuments(
+    {},
+  ).exec();
+
+  const totalResults = await Promise.resolve(countPromise);
+  return totalResults;
 };

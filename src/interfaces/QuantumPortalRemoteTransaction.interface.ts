@@ -23,3 +23,8 @@ export interface ITransactionListResponse {
   totalPages: number;
   totalResults: number;
 }
+
+export interface chartData {
+  count: number;
+  date: Date;
+}
