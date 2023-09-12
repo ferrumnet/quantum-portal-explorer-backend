@@ -13,3 +13,5 @@ export const NETWORK_SEEDED_DATA = {
 export const isTransactionOrBlockHash = (addr: string) => {
   return /^0x([A-Fa-f0-9]{64})$/.test(addr);
 };
+
+export const COINPAPRIKA_API = `https://api.coinpaprika.com/v1/tickers/frm-ferrum-network`;
