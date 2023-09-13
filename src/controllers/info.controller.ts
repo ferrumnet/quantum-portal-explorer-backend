@@ -48,7 +48,7 @@ export const getInfoData = async (
         marketCapUsd,
         marketCapChange,
       },
-      count: totalTransactions,
+      totalTransactions: totalTransactions,
       graphData: transactions,
     });
   } catch (error) {
