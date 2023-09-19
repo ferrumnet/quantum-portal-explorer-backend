@@ -26,14 +26,14 @@ export const getTransaction = async (
 ): Promise<void> => {
   try {
     const tx = await transactionsService.getTransaction(req.params.txId);
-    const mynetwork = (global as any).networks;
-    const matchedItem = mynetwork.find((item: any) => {
+    const myNetwork = (global as any).networks;
+    const matchedItem = myNetwork?.find((item: any) => {
       return tx.networkId === item.name || tx.remoteNetworkId === item.name;
     });
     const rpcUrl = matchedItem.rpcUrl;
     const web3 = new Web3(rpcUrl);
     const response = await web3.eth.getTransactionReceipt(
-      req.params.txId as string,
+      '0xcbd5570d6af92c82535e4640de2a26f1cefd976c07b890a8c9c3cc7023e79808',
     );
     if (response?.logs) {
       res.send({
