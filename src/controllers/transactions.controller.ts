@@ -33,7 +33,7 @@ export const getTransaction = async (
     const rpcUrl = matchedItem.rpcUrl;
     const web3 = new Web3(rpcUrl);
     const response = await web3.eth.getTransactionReceipt(
-      '0xcbd5570d6af92c82535e4640de2a26f1cefd976c07b890a8c9c3cc7023e79808',
+      req.params.txId as string,
     );
     if (response?.logs) {
       res.send({
@@ -46,6 +46,22 @@ export const getTransaction = async (
         logs: [],
       });
     }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTransactionMinedAndFinalizedDetail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const response =
+      await transactionsService.fetchRemoteTransactionWithMinedAndFinalizedTx(
+        req.params.txId,
+      );
+    res.send(response);
   } catch (error) {
     next(error);
   }

@@ -15,3 +15,7 @@ export const isTransactionOrBlockHash = (addr: string) => {
 };
 
 export const COINPAPRIKA_API = `https://api.coinpaprika.com/v1/tickers/frm-ferrum-network`;
+
+export const LEDGER_MANAGER_CONTRACT_ADDRESS =
+  '0xe954e32daabfddb7d240d94b2e3e7868532eecd7';
+export const MINER_ADDRESS = '0x50eCC1A45733Cd866066a4Db663dc8E2ce4115Fc';

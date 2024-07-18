@@ -14,5 +14,10 @@ router.get(
   validate(transactionValidation.getTransaction),
   transactionController.getTransaction,
 );
+router.get(
+  '/finalized/:txId',
+  validate(transactionValidation.getTransaction),
+  transactionController.getTransactionMinedAndFinalizedDetail,
+);
 
 export default router;
