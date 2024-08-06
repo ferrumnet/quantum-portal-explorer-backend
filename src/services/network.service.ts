@@ -41,3 +41,18 @@ export const updateNetwork = async (
   await network.save();
   return network;
 };
+
+export const getNetworkFromGlobalScope = (
+  network: string,
+): INetwork | undefined => {
+  const networks = (global as any).networks;
+  let data;
+  networks.forEach((item: any) => {
+    if (network === item.name) {
+      console.log({ network, item });
+      data = item;
+    }
+  });
+
+  return data;
+};

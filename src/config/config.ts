@@ -12,6 +12,7 @@ const envVarsSchema = Joi.object()
       .required(),
     PORT: Joi.number().default(3000),
     MONGODB_URL: Joi.string().required().description('Mongo DB url'),
+    RPC_URL: Joi.string().required().description('RPC URL'),
   })
   .unknown();
 
@@ -26,6 +27,7 @@ if (error) {
 const config = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
+  rpcUrl: envVars.RPC_URL,
   mongoose: {
     url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
     options: {

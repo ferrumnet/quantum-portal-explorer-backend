@@ -17,7 +17,6 @@ export const getBlockTxs = {
 
 export const getBlockByHash = {
   query: Joi.object().keys({
-    networkId: Joi.string(),
     blockHash: Joi.string().required(),
   }),
 };

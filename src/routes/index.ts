@@ -7,6 +7,7 @@ import contractRoute from './contract.route';
 import methodRoute from './method.route';
 import explorerRoute from './explorer.route';
 import infoRoute from './info.route';
+import nodeRoute from './node.route';
 
 const router = express.Router();
 
@@ -42,6 +43,10 @@ const defaultRoute = [
   {
     path: '/info',
     route: infoRoute,
+  },
+  {
+    path: '/node',
+    route: nodeRoute,
   },
 ];
 
