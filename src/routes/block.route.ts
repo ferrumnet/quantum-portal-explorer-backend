@@ -11,6 +11,11 @@ router.get(
   blockController.getBlockByHash,
 );
 router.get(
+  '/:blockNumber',
+  validate(blockValidation.getBlock),
+  blockController.getBlockByNumber,
+);
+router.get(
   '/hash/txs',
   validate(blockValidation.getBlockTxs),
   blockController.getBlockTxs,

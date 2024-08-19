@@ -1,32 +1,25 @@
-import { QuantumPortalRemoteTransactionModel } from '../models';
-import {
-  ITransactionListResponse,
-  QuantumPortalRemoteTransaction,
-} from '../interfaces';
+import { QuantumPortalTransactionModel } from '../models';
 import { chartData } from '../interfaces/QuantumPortalRemoteTransaction.interface';
 import PocContractABI from '../utils/abi/poc.json';
 import MGRContractABI from '../utils/abi/ledgerMgr.json';
 import { ethers } from 'ethers';
-import {
-  LEDGER_MANAGER_CONTRACT_ADDRESS,
-  MINER_ADDRESS,
-} from '../utils/constants';
+import { ContractAddresses } from '../utils/constants';
 
 export const getTxs = async (
   page: number,
   limit: number,
   address?: string,
-): Promise<ITransactionListResponse> => {
+): Promise<any> => {
   const query: any = {};
   if (address) {
     query.$or = [{ sourceMsgSender: address }, { remoteContract: address }];
   }
-  const docsPromise = QuantumPortalRemoteTransactionModel.find(query)
+  const docsPromise = QuantumPortalTransactionModel.find(query)
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
   const countPromise =
-    QuantumPortalRemoteTransactionModel.countDocuments(query).exec();
+    QuantumPortalTransactionModel.countDocuments(query).exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,
@@ -43,10 +36,8 @@ export const getTxs = async (
   return result;
 };
 
-export const getTransaction = async (
-  txId: string,
-): Promise<QuantumPortalRemoteTransaction> => {
-  const tx = await QuantumPortalRemoteTransactionModel.findOne({
+export const getTransaction = async (txId: string): Promise<any> => {
+  const tx = await QuantumPortalTransactionModel.findOne({
     hash: txId,
   });
   return tx;
@@ -56,13 +47,13 @@ export const getAllTransactions = async (
   page: number,
   limit: number,
   queryData: any,
-): Promise<ITransactionListResponse> => {
-  const docsPromise = QuantumPortalRemoteTransactionModel.find(queryData)
+): Promise<any> => {
+  const docsPromise = QuantumPortalTransactionModel.find(queryData)
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
 
-  const countPromise = await QuantumPortalRemoteTransactionModel.countDocuments(
+  const countPromise = await QuantumPortalTransactionModel.countDocuments(
     queryData,
   ).exec();
 
@@ -82,11 +73,15 @@ export const getAllTransactions = async (
   return result;
 };
 
+export const saveTransactions = async (txs: any[]) => {
+  return await QuantumPortalTransactionModel.insertMany(txs);
+};
+
 export const getDataForChart = async (
   startDate: any,
   endDate: any,
 ): Promise<chartData[]> => {
-  const result = QuantumPortalRemoteTransactionModel.aggregate([
+  const result = QuantumPortalTransactionModel.aggregate([
     {
       $match: {
         timestamp: {
@@ -122,15 +117,13 @@ export const getDataForChart = async (
   return result;
 };
 
-export const getTransactionByQuery = async (
-  query: Object,
-): Promise<QuantumPortalRemoteTransaction> => {
-  const tx = await QuantumPortalRemoteTransactionModel.findOne(query);
+export const getTransactionByQuery = async (query: Object): Promise<any> => {
+  const tx = await QuantumPortalTransactionModel.findOne(query);
   return tx;
 };
 
 export const totalTransactions = async (): Promise<Number> => {
-  const countPromise = await QuantumPortalRemoteTransactionModel.countDocuments(
+  const countPromise = await QuantumPortalTransactionModel.countDocuments(
     {},
   ).exec();
 
@@ -166,7 +159,7 @@ export const fetchRemoteTransactionWithMinedAndFinalizedTx = async (
     type: 'event',
   });
   const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
-  console.log('Fetching provider ', provider);
+  // console.log('Fetching provider ', provider);
   let tx = await provider.getTransaction(txHash);
   console.log('Found transaction,', tx);
   if (tx === null) {
@@ -240,7 +233,7 @@ export const fetchRemoteTransactionWithMinedAndFinalizedTx = async (
   // now fetch the transactions from the miner
   // TODO : This is a hack and it only works because we know the address of the miner/finalizer
   // in reality we would not know this, we should instead store all txs to the ledger manager in a DB
-  let miner_address = MINER_ADDRESS;
+  let miner_address = ContractAddresses.Miner;
   const url = `${process.env.EXPLORER_URL}/api?module=account&action=txlist&address=${miner_address}`;
 
   const response = await fetch(url);
@@ -249,7 +242,7 @@ export const fetchRemoteTransactionWithMinedAndFinalizedTx = async (
   //console.log("received transaction list ", data);
 
   const targetContracts = [
-    LEDGER_MANAGER_CONTRACT_ADDRESS, // ledger manager
+    ContractAddresses.QuantumPortalLedgerMgr, // ledger manager
   ];
 
   // we only care about mine/finalise transactions

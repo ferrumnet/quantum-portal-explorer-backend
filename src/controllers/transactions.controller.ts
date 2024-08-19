@@ -1,5 +1,6 @@
 import { transactionsService } from '../services';
 import { NextFunction, Request, Response } from 'express';
+import config from '../config/config';
 import Web3 from 'web3';
 
 export const getTransactions = async (
@@ -26,12 +27,7 @@ export const getTransaction = async (
 ): Promise<void> => {
   try {
     const tx = await transactionsService.getTransaction(req.params.txId);
-    const myNetwork = (global as any).networks;
-    const matchedItem = myNetwork?.find((item: any) => {
-      return tx.networkId === item.name || tx.remoteNetworkId === item.name;
-    });
-    const rpcUrl = matchedItem.rpcUrl;
-    const web3 = new Web3(rpcUrl);
+    const web3 = new Web3(config.rpcUrl);
     const response = await web3.eth.getTransactionReceipt(
       req.params.txId as string,
     );

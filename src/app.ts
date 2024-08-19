@@ -2,6 +2,7 @@ import express, { Request, Response, Application, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import router from './routes';
+import crons from './crons';
 import httpStatus from 'http-status';
 import ApiError from './utils/ApiError';
 import { successHandler, errorHandler } from './config/morgan';
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.options('*', cors());
 
+app.use(crons);
 app.use('/v1/api', router);
 
 // send back a 404 error for any unknown api request

@@ -1,31 +1,23 @@
 import {
-  QuantumPortalMinedBlockModel,
-  QuantumPortalRemoteTransactionModel,
+  QuantumPortalBlockModel,
+  QuantumPortalTransactionModel,
 } from '../models';
-import {
-  IBlockListResponse,
-  ITransactionListResponse,
-  QuantumPortalMinedBlockDocument,
-} from '../interfaces';
 
-export const getBlockByBlockHash = async (
-  blockHash: string,
-  networkId?: string,
-): Promise<QuantumPortalMinedBlockDocument> => {
-  const filter: { networkId?: string; blockHash: string } = {
-    blockHash: blockHash,
+export const saveBlock = async (block: any) => {
+  return await QuantumPortalBlockModel.create(block);
+};
+
+export const getBlockByBlockHash = async (blockHash: string): Promise<any> => {
+  const filter: { hash: string } = {
+    hash: blockHash,
   };
-  if (networkId) {
-    filter.networkId = networkId;
-  }
-  const block = await QuantumPortalMinedBlockModel.findOne(filter);
+
+  const block = await QuantumPortalBlockModel.findOne(filter);
   return block;
 };
 
-export const getBlockByQuery = async (
-  query: Object,
-): Promise<QuantumPortalMinedBlockDocument> => {
-  const block = await QuantumPortalMinedBlockModel.findOne(query);
+export const getBlockByQuery = async (query: Object): Promise<any> => {
+  const block = await QuantumPortalBlockModel.findOne(query);
   return block;
 };
 
@@ -33,15 +25,14 @@ export const getBlockTxsByBlockHash = async (
   blockHash: string,
   page: number,
   limit: number,
-): Promise<ITransactionListResponse> => {
-  const docsPromise = await QuantumPortalRemoteTransactionModel.find({
+): Promise<any> => {
+  const docsPromise = await QuantumPortalTransactionModel.find({
     blockHash,
   })
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
-  const countPromise =
-    QuantumPortalRemoteTransactionModel.countDocuments().exec();
+  const countPromise = QuantumPortalTransactionModel.countDocuments().exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,
@@ -61,13 +52,12 @@ export const getBlockTxsByBlockHash = async (
 export const getRecentBlocks = async (
   page: number,
   limit: number,
-): Promise<IBlockListResponse> => {
-  const docsPromise = await QuantumPortalMinedBlockModel.find()
+): Promise<any> => {
+  const docsPromise = await QuantumPortalBlockModel.find()
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
-  const countPromise =
-    QuantumPortalRemoteTransactionModel.countDocuments().exec();
+  const countPromise = QuantumPortalTransactionModel.countDocuments().exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,
@@ -88,14 +78,13 @@ export const getAllBlocks = async (
   page: number,
   limit: number,
   queryData: any,
-): Promise<IBlockListResponse> => {
-  const docsPromise = await QuantumPortalMinedBlockModel.find(queryData)
+): Promise<any> => {
+  const docsPromise = await QuantumPortalBlockModel.find(queryData)
     .sort({ timestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
 
-  const countPromise =
-    QuantumPortalMinedBlockModel.countDocuments(queryData).exec();
+  const countPromise = QuantumPortalBlockModel.countDocuments(queryData).exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,
@@ -110,4 +99,15 @@ export const getAllBlocks = async (
     totalResults,
   };
   return result;
+};
+
+export const getLastBlockNumber = async (): Promise<number | undefined> => {
+  const lastBlock = await QuantumPortalBlockModel.find()
+    .sort({ nonce: -1 })
+    .limit(1)
+    .exec();
+  if (!lastBlock.length) {
+    return;
+  }
+  return lastBlock[0].number;
 };

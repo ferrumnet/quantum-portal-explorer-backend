@@ -17,6 +17,21 @@ export const getBlocks = async (
   }
 };
 
+export const getBlockByNumber = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const block = await blockService.getBlockByQuery({
+      number: parseInt(req.params.blockNumber as any),
+    });
+    res.send(block);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getBlockByHash = async (
   req: Request,
   res: Response,
@@ -25,7 +40,6 @@ export const getBlockByHash = async (
   try {
     const block = await blockService.getBlockByBlockHash(
       req.query.blockHash as any,
-      req.query.networkId as any,
     );
     res.send(block);
   } catch (error) {
