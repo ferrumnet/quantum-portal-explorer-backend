@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.options('*', cors());
 
-app.use(crons);
+// app.use(crons);
 app.use('/v1/api', router);
 
 // send back a 404 error for any unknown api request
