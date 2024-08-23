@@ -4,15 +4,18 @@ import * as transactionsService from './transaction.service';
 import config from '../config/config';
 
 export const processBlockAndTransaction = async (
-  startBlock: number,
+  startBlock: number = 0,
   endBlock: number,
 ): Promise<any> => {
+  console.log('node sync running', startBlock, endBlock);
   for (let blockNumber = startBlock; blockNumber <= endBlock; blockNumber++) {
+    console.log(`Fetching block ${blockNumber}`);
     try {
       const rpc = config.rpcUrl;
       const provider = new ethers.providers.JsonRpcProvider(rpc);
       // Fetch the block
       const block = await provider.getBlockWithTransactions(blockNumber);
+      console.log({ block });
       if (block) {
         await blockService.saveBlock(block);
         await Promise.all(

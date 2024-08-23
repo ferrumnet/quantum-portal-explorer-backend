@@ -7,6 +7,9 @@ const nodeSyncJob = async () => {
   const provider = new ethers.providers.JsonRpcProvider(rpc);
   const currentBlock = await provider.getBlockNumber();
   const lastVisitedBlock = await blockService.getLastBlockNumber();
-  await nodeService.processBlockAndTransaction(lastVisitedBlock, currentBlock);
+  await nodeService.processBlockAndTransaction(
+    currentBlock - 1000,
+    currentBlock,
+  );
 };
 export default nodeSyncJob;
