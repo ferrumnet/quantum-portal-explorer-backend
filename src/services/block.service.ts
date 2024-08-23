@@ -103,7 +103,7 @@ export const getAllBlocks = async (
 
 export const getLastBlockNumber = async (): Promise<number | undefined> => {
   const lastBlock = await QuantumPortalBlockModel.find()
-    .sort({ nonce: -1 })
+    .sort({ number: -1 })
     .limit(1)
     .exec();
   if (!lastBlock.length) {
