@@ -2,7 +2,7 @@ import { CronJob } from 'cron';
 import nodeSync from './nodeSync';
 
 const nodeSyncJob = new CronJob(
-  '*/10 * * * *',
+  '*/1 * * * *',
   function () {
     nodeSync();
   },
