@@ -41,9 +41,9 @@ export const searchData = async (
           req.query.data as string,
         );
         if (!response) {
-          response = await blockService.getBlockByBlockHash(
-            req.query.data as string,
-          );
+          response = await blockService.getBlockByQuery({
+            number: req.query.data as string,
+          });
         }
       }
     }
