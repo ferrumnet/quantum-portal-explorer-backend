@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { transactionsService } from '../services';
 import axios from 'axios';
-import { COINPAPRIKA_API } from '../utils/constants';
+import { COINGECKO_API } from '../utils/constants';
 
 export const getInfoData = async (
   req: Request,
@@ -9,40 +9,31 @@ export const getInfoData = async (
   next: NextFunction,
 ): Promise<void> => {
   try {
-    // => To get FRM data
-    const response = await axios.get(COINPAPRIKA_API);
-    const price = response?.data.quotes.USD.price;
-    const marketCapUsd = response?.data.quotes.USD.market_cap;
-    const marketCapChange = response?.data.quotes.USD.market_cap_change_24h;
-    const volume24h = response?.data?.quotes?.USD?.volume_24h;
+    // Fetch FRM data from CoinGecko API
+    const { data } = await axios.get(COINGECKO_API);
 
-    // => to get garph data
-    const today = new Date();
+    const frmPrice = data?.market_data.current_price.usd;
+    const frmPriceChangePercentage =
+      data?.market_data.price_change_percentage_24h;
+    const frmMarketCap = data?.market_data.market_cap.usd;
+    const frmMarketCapChangePercentage =
+      data?.market_data.market_cap_change_percentage_24h;
+    const frmVolume24h = data?.market_data.total_volume.usd;
 
-    const timestampsForLast7Days: any = [];
-    const requestedDays = Number(req.query.days);
+    // Fetch graph data for the last 24 hours
+    const now = new Date();
+    const oneDayAgo = new Date(now);
+    oneDayAgo.setDate(now.getDate() - 1);
 
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      date.toISOString();
-      const timestamp = getTimestampForDate(date);
-      timestampsForLast7Days.push(timestamp);
-    }
-
-    var endDate = new Date(); // Current date
-    var startDate = new Date(endDate);
-    startDate.setDate(endDate.getDate() - requestedDays);
-
-    const startTimeStamp = getTimestampForDate(startDate);
-    const endTimeStamp = getTimestampForDate(endDate);
+    const startTimeStamp = convertDateToTimestamp(oneDayAgo);
+    const endTimeStamp = convertDateToTimestamp(now);
 
     const transactions = await transactionsService.getDataForChart(
       startTimeStamp,
       endTimeStamp,
     );
 
-    // => to get total Transactions
+    // Fetch total transactions
     const totalTransactions = await transactionsService.totalTransactions();
     const generateLast24HourData = () => {
       const data = [];
@@ -52,7 +43,7 @@ export const getInfoData = async (
         date.setHours(date.getHours() - i);
         const volume = Math.floor(Math.random() * (5000 - 1000 + 1)) + 1000;
         data.push({
-          date: date.toISOString(),
+          // date: date.toISOString(),
           volume: volume,
         });
       }
@@ -63,23 +54,24 @@ export const getInfoData = async (
     // Example usage for graph data
     const graphData =
       transactions.length > 0 ? transactions : generateLast24HourData();
-
+    // Send data to the frontend
     res.send({
       frmData: {
-        price,
-        marketCapUsd,
-        marketCapChange,
-        volume24h,
+        price: frmPrice,
+        priceChangePercentage: frmPriceChangePercentage,
+        marketCap: frmMarketCap,
+        marketCapChangePercentage: frmMarketCapChangePercentage,
+        volume24h: frmVolume24h,
       },
-      totalTransactions: totalTransactions,
-      graphData: graphData,
+      totalTransactions,
+      graphData,
     });
   } catch (error) {
     next(error);
   }
 };
 
-// => To Convert date into seconds
-export const getTimestampForDate = (date: Date) => {
+// Utility function to convert a date to a Unix timestamp (in seconds)
+export const convertDateToTimestamp = (date: Date): number => {
   return Math.floor(date.getTime() / 1000);
 };
