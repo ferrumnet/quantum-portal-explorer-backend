@@ -12,7 +12,7 @@ export const getTxs = async (
 ): Promise<any> => {
   const query: any = {};
   if (address) {
-    query.$or = [{ sourceMsgSender: address }, { remoteContract: address }];
+    query.$or = [{ from: address }, { to: address }];
   }
   const docsPromise = QuantumPortalTransactionModel.find(query)
     .sort({ timestamp: -1 })
@@ -161,8 +161,8 @@ export const fetchRemoteTransactionWithMinedAndFinalizedTx = async (
   const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
   // console.log('Fetching provider ', provider);
   let tx = await provider.getTransaction(txHash);
-  console.log('Found transaction,', tx);
   if (tx === null) {
+    console.log('Found transaction,', tx, tx === null);
     return new Error('Transaction not found');
   }
   const block = await provider.getBlock(tx?.blockNumber);
