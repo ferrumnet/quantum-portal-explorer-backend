@@ -14,7 +14,8 @@ export const isTransactionOrBlockHash = (addr: string) => {
   return /^0x([A-Fa-f0-9]{64})$/.test(addr);
 };
 
-export const COINPAPRIKA_API = `https://api.coinpaprika.com/v1/tickers/frm-ferrum-network`;
+// export const COINPAPRIKA_API = `https://api.coinpaprika.com/v1/tickers/frm-ferrum-network`;
+export const COINGECKO_API = `https://api.coingecko.com/api/v3/coins/ferrum-network`;
 
 export const ContractAddresses = {
   QuantumPortalGateway: '0x42344220775e9A3A89534503d8eE4414e853476A',
