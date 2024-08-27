@@ -28,7 +28,10 @@ app.use(cors());
 app.options('*', cors());
 
 app.use('/v1/api', router);
-app.use(crons);
+
+app.use('/health', (req: Request, res: Response) => {
+  res.status(httpStatus.OK).send('Welcome to Quantum Portal API');
+});
 
 // send back a 404 error for any unknown api request
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -40,5 +43,7 @@ app.use(errorConverter);
 
 // handle error
 app.use(errorHandlers);
+
+app.use(crons);
 
 export default app;
