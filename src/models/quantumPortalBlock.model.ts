@@ -6,15 +6,16 @@ const quantumPortalBlockSchema = new Schema({
   parentHash: String,
   number: Number,
   nonce: String,
-  timestamp: Number,
-  difficulty: Number,
+  timestamp: String,
+  difficulty: String,
   gasLimit: String,
   gasUsed: String,
   miner: String,
-  extraData: String,
-  transactions: [Object],
   baseFeePerGas: String,
-  _difficulty: String,
+  txCount: Number,
+  rewards: [Object],
+  txsFees: String,
+  totalDifficulty: String,
 });
 
 export const QuantumPortalBlockModel = mongoose.model(

@@ -5,6 +5,19 @@ import MGRContractABI from '../utils/abi/ledgerMgr.json';
 import { ethers } from 'ethers';
 import { ContractAddresses } from '../utils/constants';
 
+export const saveTransaction = async (tx: any) => {
+  const existedTx = await QuantumPortalTransactionModel.findOne({
+    hash: tx.hash,
+  });
+  if (existedTx) {
+    console.log('Transaction already exists');
+    return;
+  }
+  const transaction = new QuantumPortalTransactionModel(tx);
+  console.log('Saving transaction', transaction);
+  return await transaction.save();
+};
+
 export const getTxs = async (
   page: number,
   limit: number,
@@ -74,6 +87,7 @@ export const getAllTransactions = async (
 };
 
 export const saveTransactions = async (txs: any[]) => {
+  console.log({ txs });
   return await QuantumPortalTransactionModel.insertMany(txs);
 };
 
