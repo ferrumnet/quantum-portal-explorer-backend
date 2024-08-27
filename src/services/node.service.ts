@@ -1,11 +1,10 @@
-import { ethers } from 'ethers';
+import axios from 'axios';
 import * as blockService from './block.service';
 import * as transactionsService from './transaction.service';
 import config from '../config/config';
-import axios from 'axios';
 
 export const processBlockAndTransaction = async (
-  startBlock: number = 0,
+  startBlock: number = 58770,
   endBlock: number,
 ): Promise<any> => {
   console.log('node sync running', startBlock, endBlock);
@@ -29,7 +28,7 @@ export const processBlockAndTransaction = async (
         txCount: block.data.tx_count,
         rewards: block.data.rewards,
         txsFees: block.data.tx_fees,
-        _difficulty: block.data.difficulty, // Assuming _difficulty maps to total_difficulty
+        totalDifficulty: block.data.total_difficulty,
       });
       console.log(`Block ${blockNumber} saved`);
       console.log(
@@ -49,14 +48,29 @@ export const processBlockAndTransaction = async (
           );
           const saved = await transactionsService.saveTransaction({
             hash: tx.hash,
+            type: tx.type,
+            blockNumber: tx.block,
+            status: tx.status,
+            method: tx.method,
             timestamp: tx.timestamp,
             from: tx?.from?.hash,
+            fromDetails: tx?.from,
             to: tx?.to?.hash,
+            toDetails: tx?.to,
             block: tx?.block,
             value: tx?.value,
             fee: tx?.fee?.value,
+            gasLimit: tx?.gas_limit,
+            gasUsed: tx?.gas_used,
+            gasPrice: tx?.gas_price,
             decodedInput: tx?.decoded_input,
             logs: logs?.data?.items,
+            nonce: tx?.nonce,
+            confirmations: tx?.confirmations,
+            priorityFee: tx?.priority_fee,
+            maxPriorityFeePerGas: tx?.max_priority_fee_per_gas,
+            baseFeePerGas: tx?.base_fee_per_gas,
+            maxFeePerGas: tx?.max_fee_per_gas,
           });
           console.log(`Transaction ${saved.hash} saved`);
         });

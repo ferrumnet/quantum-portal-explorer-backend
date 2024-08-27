@@ -15,7 +15,7 @@ const quantumPortalBlockSchema = new Schema({
   txCount: Number,
   rewards: [Object],
   txsFees: String,
-  _difficulty: String,
+  totalDifficulty: String,
 });
 
 export const QuantumPortalBlockModel = mongoose.model(
