@@ -4,7 +4,7 @@ import * as transactionsService from './transaction.service';
 import config from '../config/config';
 
 export const processBlockAndTransaction = async (
-  startBlock: number = 58770,
+  startBlock: number,
   endBlock: number,
 ): Promise<any> => {
   console.log('node sync running', startBlock, endBlock);
@@ -72,7 +72,7 @@ export const processBlockAndTransaction = async (
             baseFeePerGas: tx?.base_fee_per_gas,
             maxFeePerGas: tx?.max_fee_per_gas,
           });
-          console.log(`Transaction ${saved.hash} saved`);
+          console.log(`Transaction ${saved?.hash} saved`);
         });
       } else {
         console.log(`Block ${blockNumber} is empty`);
