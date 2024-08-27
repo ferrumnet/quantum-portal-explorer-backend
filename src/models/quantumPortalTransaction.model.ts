@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 const quantumPortalTransactionSchema = new Schema({
   hash: String,
   type: Number,
-  accessList: [Object],
+  // accessList: [Object],
   networkId: String,
   blockHash: String,
   blockNumber: Number,
@@ -24,6 +24,10 @@ const quantumPortalTransactionSchema = new Schema({
   v: Number,
   creates: String,
   chainId: Number,
+  timestamp: String,
+  fee: String,
+  decodedInput: Object,
+  logs: [Object],
   wait: String,
 });
 

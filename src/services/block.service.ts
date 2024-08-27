@@ -4,6 +4,10 @@ import {
 } from '../models';
 
 export const saveBlock = async (block: any) => {
+  const existedBlock = await getBlockByQuery({ number: block.number });
+  if (existedBlock) {
+    return existedBlock;
+  }
   return await QuantumPortalBlockModel.create(block);
 };
 
