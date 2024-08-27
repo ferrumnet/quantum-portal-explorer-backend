@@ -7,6 +7,7 @@ const quantumPortalTransactionSchema = new Schema({
   nonce: Number,
   status: String,
   method: String,
+  position: Number,
   blockNumber: Number,
   confirmations: Number,
   from: String,
@@ -24,6 +25,7 @@ const quantumPortalTransactionSchema = new Schema({
   chainId: Number,
   timestamp: String,
   fee: String,
+  inputData: String,
   decodedInput: Object,
   logs: [Object],
 });
