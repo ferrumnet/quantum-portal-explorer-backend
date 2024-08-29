@@ -17,3 +17,19 @@ export const registerContract = async (
     next(error);
   }
 };
+
+export const getContract = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    console.log(req.params);
+    const contract = await contractService.getSmartContract(
+      req.params.contractAddress,
+    );
+    res.send(contract);
+  } catch (error) {
+    next(error);
+  }
+};

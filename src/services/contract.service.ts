@@ -74,6 +74,14 @@ export const registerContract = async (
   return newAccount;
 };
 
+export const getSmartContract = async (contractAddress: string) => {
+  const contract = await axios.get(
+    `${config.explorerUrl}/api/v2/smart-contracts/${contractAddress}`,
+  );
+  console.log('contract', contract);
+  return contract?.data;
+};
+
 export function sha256sync(hexData: string): string {
   const dataWa = encHex.parse(hexData);
   const hash: WordArray = SHA256(dataWa);
