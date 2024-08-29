@@ -23,7 +23,9 @@ export const getTxs = async (
   limit: number,
   address?: string,
 ): Promise<any> => {
-  const query: any = {};
+  const query: any = {
+    method: 'finalize',
+  };
   if (address) {
     query.$or = [{ from: address }, { to: address }];
   }
@@ -38,22 +40,127 @@ export const getTxs = async (
     countPromise,
     docsPromise,
   ]);
+  const matchingRecords = [];
+  if (results.length > 0) {
+    // Prepare an array to hold all matching mineRemoteBlock transactions
+
+    // Step 2: Loop through each finalize transaction and find matching mineRemoteBlock transactions
+    for (const finalizeTx of results) {
+      const blockNonce = finalizeTx.decodedInput.parameters.find(
+        (param: any) => param.name === 'blockNonce',
+      ).value;
+      const remoteChainId = finalizeTx.decodedInput.parameters.find(
+        (param: any) => param.name === 'remoteChainId',
+      ).value;
+
+      // Find matching mineRemoteBlock transactions
+      const matchingMineRemoteBlockTx =
+        await QuantumPortalTransactionModel.findOne({
+          method: 'mineRemoteBlock',
+          $and: [
+            {
+              'decodedInput.parameters': {
+                $elemMatch: {
+                  name: 'blockNonce',
+                  value: blockNonce,
+                },
+              },
+            },
+            {
+              'decodedInput.parameters': {
+                $elemMatch: {
+                  name: 'remoteChainId',
+                  value: remoteChainId,
+                },
+              },
+            },
+          ],
+        });
+
+      if (matchingMineRemoteBlockTx) {
+        const transactions =
+          matchingMineRemoteBlockTx.decodedInput.parameters.find(
+            (param: any) => param.name === 'transactions',
+          ).value;
+        matchingRecords.push({
+          ...finalizeTx.toObject(),
+          remoteContract: transactions[0][1],
+          sourceMsgSender: transactions[0][2],
+          sourceBeneficiary: transactions[0][3],
+        });
+      }
+    }
+  }
+
   const totalPages = Math.ceil(totalResults / limit);
   const result = {
-    results,
+    results: matchingRecords.length ? matchingRecords : results,
     page,
     limit,
     totalPages,
-    totalResults,
+    totalResults: matchingRecords.length
+      ? matchingRecords.length
+      : results.length,
   };
   return result;
 };
 
 export const getTransaction = async (txId: string): Promise<any> => {
-  const tx = await QuantumPortalTransactionModel.findOne({
+  let remoteContract: any = '';
+  let sourceMsgSender: any = '';
+  let sourceBeneficiary: any = '';
+
+  const tx: any = await QuantumPortalTransactionModel.findOne({
     hash: txId,
+    method: 'finalize',
   });
-  return tx;
+  if (tx) {
+    const blockNonce = tx.decodedInput.parameters.find(
+      (param: any) => param.name === 'blockNonce',
+    ).value;
+    const remoteChainId = tx.decodedInput.parameters.find(
+      (param: any) => param.name === 'remoteChainId',
+    ).value;
+    const matchingMineRemoteBlockTx =
+      await QuantumPortalTransactionModel.findOne({
+        method: 'mineRemoteBlock',
+        $and: [
+          {
+            'decodedInput.parameters': {
+              $elemMatch: {
+                name: 'blockNonce',
+                value: blockNonce,
+              },
+            },
+          },
+          {
+            'decodedInput.parameters': {
+              $elemMatch: {
+                name: 'remoteChainId',
+                value: remoteChainId,
+              },
+            },
+          },
+        ],
+      });
+
+    if (matchingMineRemoteBlockTx) {
+      const transactions =
+        matchingMineRemoteBlockTx.decodedInput.parameters.find(
+          (param: any) => param.name === 'transactions',
+        ).value;
+      remoteContract = transactions[0][1];
+      sourceMsgSender = transactions[0][2];
+      sourceBeneficiary = transactions[0][3];
+      // console.log(tx);
+    }
+  }
+  return {
+    ...tx.toObject(),
+    remoteContract,
+    sourceMsgSender,
+    sourceBeneficiary,
+  };
 };
 
 export const getAllTransactions = async (

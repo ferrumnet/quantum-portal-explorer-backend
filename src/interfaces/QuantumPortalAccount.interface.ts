@@ -18,8 +18,22 @@ export interface QuantumPortalContractAccount {
   contractId: string;
 }
 
+interface Implementations {
+  address: string;
+  name: string;
+}
+
 export interface QuantumPortalAccount {
   address: string;
   isContract: boolean;
+  isVerified: boolean;
+  token: object;
+  hash: string;
+  creator: string;
+  name: string;
+  // metadata: object;
+  implementationAddress: string;
+  implementationName: string;
+  implementations: [Implementations];
   contract: { [k: string]: QuantumPortalContractAccount };
 }
