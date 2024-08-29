@@ -10,6 +10,11 @@ router.get(
   transactionController.getTransactions,
 );
 router.get(
+  '/token-transfer/:address',
+  validate(transactionValidation.getTransferTokenTransactions),
+  transactionController.getTransferTokenTransactions,
+);
+router.get(
   '/:txId',
   validate(transactionValidation.getTransaction),
   transactionController.getTransaction,
