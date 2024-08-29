@@ -44,6 +44,6 @@ app.use(errorConverter);
 // handle error
 app.use(errorHandlers);
 
-// app.use(crons);
+app.use(crons);
 
 export default app;
