@@ -3,7 +3,8 @@ import { chartData } from '../interfaces/QuantumPortalRemoteTransaction.interfac
 import PocContractABI from '../utils/abi/poc.json';
 import MGRContractABI from '../utils/abi/ledgerMgr.json';
 import { ethers } from 'ethers';
-import { ContractAddresses } from '../utils/constants';
+import { COINGECKO_API, ContractAddresses } from '../utils/constants';
+import axios from 'axios';
 
 export const saveTransaction = async (tx: any) => {
   const existedTx = await QuantumPortalTransactionModel.findOne({
@@ -105,6 +106,42 @@ export const getTxs = async (
   return result;
 };
 
+export const getTransferTokensTxs = async (
+  type: string,
+  address: string,
+  page: number,
+  limit: number,
+): Promise<any> => {
+  const query: any = {
+    method: 'finalize',
+  };
+  if (type) {
+    query.txType = type;
+  }
+  if (address) {
+    query.$or = [{ from: address }, { to: address }];
+  }
+  const docsPromise = QuantumPortalTransactionModel.find(query)
+    .sort({ timestamp: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  const countPromise =
+    QuantumPortalTransactionModel.countDocuments(query).exec();
+  const [totalResults, results] = await Promise.all([
+    countPromise,
+    docsPromise,
+  ]);
+  const totalPages = Math.ceil(totalResults / limit);
+  const result = {
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+  return result;
+};
+
 export const getTransaction = async (txId: string): Promise<any> => {
   let remoteContract: any = '';
   let sourceMsgSender: any = '';
@@ -198,44 +235,41 @@ export const saveTransactions = async (txs: any[]) => {
   return await QuantumPortalTransactionModel.insertMany(txs);
 };
 
-export const getDataForChart = async (
-  startDate: any,
-  endDate: any,
-): Promise<chartData[]> => {
-  const result = QuantumPortalTransactionModel.aggregate([
-    {
-      $match: {
+export const getDataForChart = async (): Promise<any> => {
+  try {
+    const newArray = [];
+    const horlyStartDate = new Date();
+
+    for (let i = 0; i < 24; i++) {
+      // Create a new date for the current hour
+      const currentDate = new Date(
+        horlyStartDate.getTime() - 40 * 60 * 60 * 1000,
+      );
+      currentDate.setHours(horlyStartDate.getHours() + i);
+
+      // Create a new date for the end of the hour
+      const endDate = new Date(currentDate);
+      endDate.setHours(currentDate.getHours() + 1);
+
+      // Query for records within the current hour
+      const hoursResult = await QuantumPortalTransactionModel.find({
         timestamp: {
-          $gte: startDate,
-          $lte: endDate,
+          $gte: currentDate.toISOString(),
+          $lte: endDate.toISOString(),
         },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          $dateToString: {
-            format: '%d/%m/%Y',
-            date: { $toDate: { $multiply: ['$timestamp', 1000] } }, // Convert timestamp to milliseconds
-          },
-        },
-        count: { $sum: 1 },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        date: '$_id',
-        count: 1,
-      },
-    },
-    {
-      $sort: {
-        date: 1,
-      },
-    },
-  ]);
-  return result;
+      });
+
+      // Push the date and count to the array
+      newArray.push({
+        date: currentDate.toISOString(),
+        volume: hoursResult.length,
+      });
+    }
+    return newArray;
+  } catch (error) {
+    console.error('Error fetching data for chart:', error);
+    throw error;
+  }
 };
 
 export const getTransactionByQuery = async (query: Object): Promise<any> => {
@@ -506,4 +540,20 @@ export const fetchRemoteTransactionWithMinedAndFinalizedTx = async (
     }
   }
   return responseObj;
+};
+export const fetchStateDataFromCoinGekoAPI = async () => {
+  try {
+    const { data } = await axios.get(COINGECKO_API);
+    return {
+      price: data?.market_data.current_price.usd,
+      priceChangePercentage: data?.market_data.price_change_percentage_24h,
+      marketCap: data?.market_data.market_cap.usd,
+      marketCapChangePercentage:
+        data?.market_data.market_cap_change_percentage_24h,
+      volume24h: data?.market_data.total_volume.usd,
+    };
+  } catch (error) {
+    console.error('Error fetching CoinGecko data:', error);
+    throw new Error('Failed to fetch CoinGecko data');
+  }
 };
