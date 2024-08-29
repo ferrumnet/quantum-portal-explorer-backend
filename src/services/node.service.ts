@@ -49,6 +49,7 @@ export const processBlockAndTransaction = async (
           const saved = await transactionsService.saveTransaction({
             hash: tx.hash,
             type: tx.type,
+            txType: tx.tx_types,
             blockNumber: tx.block,
             status: tx.status,
             method: tx.method,

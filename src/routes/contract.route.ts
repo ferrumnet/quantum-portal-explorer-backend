@@ -10,4 +10,6 @@ router.post(
   contractController.registerContract,
 );
 
+router.get('/:contractAddress', contractController.getContract);
+
 export default router;
