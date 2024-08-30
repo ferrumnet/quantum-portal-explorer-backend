@@ -7,6 +7,14 @@ export const getTransactions = {
     limit: Joi.number().required().default(20),
   }),
 };
+export const getInternalTransactions = {
+  query: Joi.object().keys({
+    address: Joi.string(),
+    page: Joi.number().required().default(1),
+    limit: Joi.number().required().default(20),
+  }),
+};
+
 export const getTransferTokenTransactions = {
   query: Joi.object().keys({
     address: Joi.string().allow(''),
