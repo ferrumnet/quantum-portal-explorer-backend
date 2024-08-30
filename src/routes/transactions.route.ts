@@ -15,6 +15,11 @@ router.get(
   transactionController.getTransferTokenTransactions,
 );
 router.get(
+  '/internal-txs/:address',
+  validate(transactionValidation.getInternalTransactions),
+  transactionController.getInternalTransactions,
+);
+router.get(
   '/:txId',
   validate(transactionValidation.getTransaction),
   transactionController.getTransaction,

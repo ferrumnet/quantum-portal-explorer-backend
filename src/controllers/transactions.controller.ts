@@ -19,6 +19,24 @@ export const getTransactions = async (
     next(error);
   }
 };
+
+export const getInternalTransactions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const transactions = await transactionsService.getInternalTxs(
+      req.query.page as any,
+      req.query.limit as any,
+      req.query.address as any,
+    );
+    res.send(transactions);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getTransferTokenTransactions = async (
   req: Request,
   res: Response,

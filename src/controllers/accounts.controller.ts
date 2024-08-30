@@ -37,3 +37,29 @@ export const getBalances = async (
   //   const balances = accountService.accountBalances(req.query.address as string);
   //   res.send(balances);
 };
+
+export const getAddressDetail = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const address = await accountService.getAddressDetail(req.params.address);
+    res.send(address);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAddressLogs = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const address = await accountService.getAddressLogs(req.params.address);
+    res.send(address);
+  } catch (error) {
+    next(error);
+  }
+};

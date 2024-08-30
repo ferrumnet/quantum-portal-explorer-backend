@@ -1,5 +1,4 @@
 import { QuantumPortalTransactionModel } from '../models';
-import { chartData } from '../interfaces/QuantumPortalRemoteTransaction.interface';
 import PocContractABI from '../utils/abi/poc.json';
 import MGRContractABI from '../utils/abi/ledgerMgr.json';
 import { ethers } from 'ethers';
@@ -105,7 +104,37 @@ export const getTxs = async (
   };
   return result;
 };
-
+export const getInternalTxs = async (
+  address: string,
+  page: number,
+  limit: number,
+): Promise<any> => {
+  const query: any = {
+    method: 'finalize',
+  };
+  if (address) {
+    query.to = address;
+  }
+  const docsPromise = QuantumPortalTransactionModel.find(query)
+    .sort({ timestamp: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  const countPromise =
+    QuantumPortalTransactionModel.countDocuments(query).exec();
+  const [totalResults, results] = await Promise.all([
+    countPromise,
+    docsPromise,
+  ]);
+  const totalPages = Math.ceil(totalResults / limit);
+  const result = {
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+  return result;
+};
 export const getTransferTokensTxs = async (
   type: string,
   address: string,
