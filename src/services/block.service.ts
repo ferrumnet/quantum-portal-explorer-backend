@@ -83,12 +83,57 @@ export const getAllBlocks = async (
   limit: number,
   queryData: any,
 ): Promise<any> => {
-  const docsPromise = await QuantumPortalBlockModel.find(queryData)
-    .sort({ timestamp: -1 })
-    .skip((page - 1) * limit)
-    .limit(limit);
+  let aggregate: any = [];
+  const query: any = {};
+  if (queryData.fromDate && queryData.toDate) {
+    query.$and = [
+      { timestamp: { $gte: queryData.fromDate } },
+      { timestamp: { $lte: queryData.toDate } },
+    ];
+  } else if (queryData.fromDate) {
+    query.timestamp = queryData.fromDate;
+  } else if (queryData.toDate) {
+    query.timestamp = queryData.toDate;
+  }
+  if (Object.keys(queryData).length) {
+    aggregate.push({
+      $match: {
+        ...query,
+      },
+    });
+  }
+  if (queryData.fromNetwork) {
+    aggregate.push({
+      $lookup: {
+        from: 'quantumportaltransactions',
+        localField: 'number',
+        foreignField: 'block',
+        pipeline: [
+          {
+            $match: {
+              $and: [
+                { method: 'finalize' },
+                { 'decodedInput.parameters.value': queryData.fromNetwork },
+                { 'decodedInput.parameters.name': 'remoteChainId' },
+              ],
+            },
+          },
+        ],
+        as: 'result',
+      },
+    });
+  }
+  if (queryData?.page && queryData?.limit) {
+    aggregate.push({
+      $skip: (queryData.page - 1) * queryData.limit,
+    });
+    aggregate.push({
+      $limit: queryData.limit,
+    });
+  }
+  const docsPromise = await QuantumPortalBlockModel.aggregate(aggregate);
 
-  const countPromise = QuantumPortalBlockModel.countDocuments(queryData).exec();
+  const countPromise = QuantumPortalBlockModel.countDocuments(aggregate).exec();
 
   const [totalResults, results] = await Promise.all([
     countPromise,
