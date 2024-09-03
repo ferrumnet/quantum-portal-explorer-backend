@@ -221,6 +221,9 @@ export const getTransaction = async (txId: string): Promise<any> => {
       // console.log(tx);
     }
   }
+  if (!tx) {
+    return null;
+  }
   return {
     ...tx.toObject(),
     remoteContract,
