@@ -1,10 +1,10 @@
 import Joi from 'joi';
-import { isTransactionOrBlockHashOrAddress } from './custom';
+// import { isTransactionOrBlockHashOrAddress } from './custom';
 
 export const searchData = {
   query: Joi.object()
     .keys({
-      data: Joi.string().custom(isTransactionOrBlockHashOrAddress).allow(''),
+      data: Joi.any().allow(''),
       fromNetwork: Joi.string().allow(''),
       toNetwork: Joi.string().allow(''),
       fromDate: Joi.string().allow(''),

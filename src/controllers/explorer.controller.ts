@@ -16,11 +16,15 @@ export const searchData = async (
 
     // If there is any filter in query
     if (req.query.fromNetwork) {
-      queryData.networkId = req.query.fromNetwork;
+      queryData.$and = [
+        { hash: req.query.data },
+        { 'decodedInput.parameters.name': 'remoteChainId' },
+        { 'decodedInput.parameters.value': req.query.fromNetwork },
+      ];
     }
-    if (req.query.toNetwork) {
-      queryData.remoteNetworkId = req.query.toNetwork;
-    }
+    // if (req.query.toNetwork) {
+    //   queryData.remoteNetworkId = req.query.toNetwork;
+    // }
     if (req.query.fromDate && req.query.toDate) {
       queryData.$and = [
         { timestamp: { $gte: req.query.fromDate } },
@@ -67,7 +71,7 @@ export const searchData = async (
         queryData.hash = req.query.data;
         response = await transactionsService.getTransactionByQuery(queryData);
       } else if (type === 'blocks') {
-        queryData.blockHash = req.query.data;
+        queryData.number = req.query.data;
         response = await blockService.getBlockByQuery(queryData);
       }
     }
@@ -78,8 +82,11 @@ export const searchData = async (
         response = await accountService.getAccount(req.query.data as string);
       } else {
         response = await transactionsService.getTransactionByQuery(queryData);
-        if (!response) {
-          response = await blockService.getBlockByQuery(queryData);
+        if (!response && req.query.fromNetwork) {
+          response = await blockService.getBlockBySourceChainId(
+            req.query.fromNetwork as string,
+            req.query.data as any,
+          );
         }
       }
     }

@@ -115,3 +115,45 @@ export const getLastBlockNumber = async (): Promise<number | undefined> => {
   }
   return lastBlock[0].number;
 };
+
+export const getBlockBySourceChainId = async (
+  chainId: string,
+  blockNumber: number,
+): Promise<number | undefined | any[]> => {
+  const block = await QuantumPortalBlockModel.aggregate([
+    {
+      $match: {
+        number: Number(blockNumber),
+      },
+    },
+    {
+      $lookup: {
+        from: 'quantumportaltransactions',
+        localField: 'number',
+        foreignField: 'block',
+        pipeline: [
+          {
+            $match: {
+              $and: [
+                { 'decodedInput.parameters.value': chainId },
+                { 'decodedInput.parameters.name': 'remoteChainId' },
+              ],
+            },
+          },
+        ],
+        as: 'result',
+      },
+    },
+    {
+      $unwind: '$transactions',
+    },
+    {
+      $match: {
+        'transactions.decodedInput.parameters.name': 'remoteChainId',
+        'transactions.decodedInput.parameters.value': chainId,
+      },
+    },
+  ]);
+
+  return block.length ? block : undefined;
+};
