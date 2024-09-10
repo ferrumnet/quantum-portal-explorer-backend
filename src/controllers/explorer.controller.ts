@@ -17,7 +17,9 @@ export const searchData = async (
     // ==> First Case: only data + no filters + no type
     if (req.query.data) {
       if (Web3.utils.isAddress(req.query.data as string)) {
-        response = await accountService.getAccount(req.query.data as string);
+        response = await accountService.getAddressDetail(
+          req.query.data as string,
+        );
       } else {
         response = await transactionsService.getTransaction(
           req.query.data as string,
