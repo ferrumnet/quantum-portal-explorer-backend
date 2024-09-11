@@ -1,6 +1,7 @@
 import Web3 from 'web3';
 import { transactionsService, accountService, blockService } from '../services';
 import { Request, Response, NextFunction } from 'express';
+import { QuantumPortalTransactionModel } from '../models';
 
 export const searchData = async (
   req: Request,
@@ -105,7 +106,51 @@ export const searchData = async (
           queryData,
         );
       } else if (type === 'blocks') {
-        response = await blockService.getAllBlocks(page, limit, req.query);
+        const blockQuery: any = {};
+        if (req.query.fromDate && req.query.toDate) {
+          blockQuery.$and = [
+            { timestamp: { $gte: req.query.fromDate } },
+            { timestamp: { $lte: req.query.toDate } },
+          ];
+        } else if (req.query.fromDate) {
+          blockQuery.timestamp = req.query.fromDate;
+        } else if (req.query.toDate) {
+          blockQuery.timestamp = req.query.toDate;
+        }
+        const skip = (page - 1) * limit;
+        console.log({
+          ...blockQuery,
+          $and: [
+            { method: 'finalize' },
+            { 'decodedInput.parameters.name': 'remoteChainId' },
+            { 'decodedInput.parameters.value': req.query.fromNetwork },
+          ],
+        });
+        const txs = await QuantumPortalTransactionModel.aggregate([
+          {
+            $match: {
+              ...blockQuery,
+
+              $and: [
+                { method: 'finalize' },
+                { 'decodedInput.parameters.name': 'remoteChainId' },
+                { 'decodedInput.parameters.value': req.query.fromNetwork },
+              ],
+            },
+          }, // Match the initial query
+          { $skip: skip }, // Pagination: skip the records for the previous pages
+          { $limit: limit }, // Pagination: limit the results to the desired page size
+        ]);
+
+        // Return only the unique block numbers
+
+        // console.log('txs', txs);
+        const blocksList = txs.map((tx: any) => tx.block);
+        // console.log('blocksList', blocksList);
+        response = await blockService.getAllBlocks(page, limit, {
+          number: { $in: blocksList },
+        });
+        // response = await blockService.getAllBlocks(page, limit, req.query);
       }
     }
     res.send({ response });
