@@ -53,11 +53,15 @@ export const getTxs = async (
         (param: any) => param.name === 'remoteChainId',
       ).value;
 
-      // Find matching mineRemoteBlock transactions
+      // Log 'to' contract address for finalize transaction
+      const finalizeContractAddress = finalizeTx.to;
+
+      // Find matching mineRemoteBlock transactions using find instead of findOne
       const matchingMineRemoteBlockTx =
         await QuantumPortalTransactionModel.findOne({
           method: 'mineRemoteBlock',
           $and: [
+            { to: finalizeContractAddress },
             {
               'decodedInput.parameters': {
                 $elemMatch: {
@@ -102,8 +106,10 @@ export const getTxs = async (
       ? matchingRecords.length
       : results.length,
   };
+
   return result;
 };
+
 export const getInternalTxs = async (
   address: string,
   page: number,
@@ -263,7 +269,7 @@ export const getAllTransactions = async (
 };
 
 export const saveTransactions = async (txs: any[]) => {
-  console.log({ txs });
+  // console.log({ txs });
   return await QuantumPortalTransactionModel.insertMany(txs);
 };
 
