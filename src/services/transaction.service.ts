@@ -1,18 +1,33 @@
 import { QuantumPortalTransactionModel } from '../models';
-import { chartData } from '../interfaces/QuantumPortalRemoteTransaction.interface';
 import PocContractABI from '../utils/abi/poc.json';
 import MGRContractABI from '../utils/abi/ledgerMgr.json';
 import { ethers } from 'ethers';
-import { ContractAddresses } from '../utils/constants';
+import { COINGECKO_API, ContractAddresses } from '../utils/constants';
+import axios from 'axios';
+
+export const saveTransaction = async (tx: any) => {
+  const existedTx = await QuantumPortalTransactionModel.findOne({
+    hash: tx.hash,
+  });
+  if (existedTx) {
+    console.log('Transaction already exists');
+    return;
+  }
+  const transaction = new QuantumPortalTransactionModel(tx);
+  console.log('Saving transaction', transaction);
+  return await transaction.save();
+};
 
 export const getTxs = async (
   page: number,
   limit: number,
   address?: string,
 ): Promise<any> => {
-  const query: any = {};
+  const query: any = {
+    method: 'finalize',
+  };
   if (address) {
-    query.$or = [{ sourceMsgSender: address }, { remoteContract: address }];
+    query.$or = [{ from: address }, { to: address }];
   }
   const docsPromise = QuantumPortalTransactionModel.find(query)
     .sort({ timestamp: -1 })
@@ -21,6 +36,132 @@ export const getTxs = async (
   const countPromise =
     QuantumPortalTransactionModel.countDocuments(query).exec();
 
+  const [totalResults, results] = await Promise.all([
+    countPromise,
+    docsPromise,
+  ]);
+  const matchingRecords = [];
+  if (results.length > 0) {
+    // Prepare an array to hold all matching mineRemoteBlock transactions
+
+    // Step 2: Loop through each finalize transaction and find matching mineRemoteBlock transactions
+    for (const finalizeTx of results) {
+      const blockNonce = finalizeTx.decodedInput.parameters.find(
+        (param: any) => param.name === 'blockNonce',
+      ).value;
+      const remoteChainId = finalizeTx.decodedInput.parameters.find(
+        (param: any) => param.name === 'remoteChainId',
+      ).value;
+
+      // Log 'to' contract address for finalize transaction
+      const finalizeContractAddress = finalizeTx.to;
+
+      // Find matching mineRemoteBlock transactions using find instead of findOne
+      const matchingMineRemoteBlockTx =
+        await QuantumPortalTransactionModel.findOne({
+          method: 'mineRemoteBlock',
+          $and: [
+            { to: finalizeContractAddress },
+            {
+              'decodedInput.parameters': {
+                $elemMatch: {
+                  name: 'blockNonce',
+                  value: blockNonce,
+                },
+              },
+            },
+            {
+              'decodedInput.parameters': {
+                $elemMatch: {
+                  name: 'remoteChainId',
+                  value: remoteChainId,
+                },
+              },
+            },
+          ],
+        });
+
+      if (matchingMineRemoteBlockTx) {
+        const transactions =
+          matchingMineRemoteBlockTx.decodedInput.parameters.find(
+            (param: any) => param.name === 'transactions',
+          ).value;
+        matchingRecords.push({
+          ...finalizeTx.toObject(),
+          remoteContract: transactions[0][1],
+          sourceMsgSender: transactions[0][2],
+          sourceBeneficiary: transactions[0][3],
+        });
+      }
+    }
+  }
+
+  const totalPages = Math.ceil(totalResults / limit);
+  const result = {
+    results: matchingRecords.length ? matchingRecords : results,
+    page,
+    limit,
+    totalPages,
+    totalResults: matchingRecords.length
+      ? matchingRecords.length
+      : results.length,
+  };
+
+  return result;
+};
+
+export const getInternalTxs = async (
+  address: string,
+  page: number,
+  limit: number,
+): Promise<any> => {
+  const query: any = {
+    method: 'finalize',
+  };
+  if (address) {
+    query.to = address;
+  }
+  const docsPromise = QuantumPortalTransactionModel.find(query)
+    .sort({ timestamp: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  const countPromise =
+    QuantumPortalTransactionModel.countDocuments(query).exec();
+  const [totalResults, results] = await Promise.all([
+    countPromise,
+    docsPromise,
+  ]);
+  const totalPages = Math.ceil(totalResults / limit);
+  const result = {
+    results,
+    page,
+    limit,
+    totalPages,
+    totalResults,
+  };
+  return result;
+};
+export const getTransferTokensTxs = async (
+  type: string,
+  address: string,
+  page: number,
+  limit: number,
+): Promise<any> => {
+  const query: any = {
+    method: 'finalize',
+  };
+  if (type) {
+    query.txType = type;
+  }
+  if (address) {
+    query.$or = [{ from: address }, { to: address }];
+  }
+  const docsPromise = QuantumPortalTransactionModel.find(query)
+    .sort({ timestamp: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit);
+  const countPromise =
+    QuantumPortalTransactionModel.countDocuments(query).exec();
   const [totalResults, results] = await Promise.all([
     countPromise,
     docsPromise,
@@ -37,10 +178,64 @@ export const getTxs = async (
 };
 
 export const getTransaction = async (txId: string): Promise<any> => {
-  const tx = await QuantumPortalTransactionModel.findOne({
+  let remoteContract: any = '';
+  let sourceMsgSender: any = '';
+  let sourceBeneficiary: any = '';
+
+  const tx: any = await QuantumPortalTransactionModel.findOne({
     hash: txId,
+    method: 'finalize',
   });
-  return tx;
+  if (tx) {
+    const blockNonce = tx.decodedInput.parameters.find(
+      (param: any) => param.name === 'blockNonce',
+    ).value;
+    const remoteChainId = tx.decodedInput.parameters.find(
+      (param: any) => param.name === 'remoteChainId',
+    ).value;
+    const matchingMineRemoteBlockTx =
+      await QuantumPortalTransactionModel.findOne({
+        method: 'mineRemoteBlock',
+        $and: [
+          {
+            'decodedInput.parameters': {
+              $elemMatch: {
+                name: 'blockNonce',
+                value: blockNonce,
+              },
+            },
+          },
+          {
+            'decodedInput.parameters': {
+              $elemMatch: {
+                name: 'remoteChainId',
+                value: remoteChainId,
+              },
+            },
+          },
+        ],
+      });
+
+    if (matchingMineRemoteBlockTx) {
+      const transactions =
+        matchingMineRemoteBlockTx.decodedInput.parameters.find(
+          (param: any) => param.name === 'transactions',
+        ).value;
+      remoteContract = transactions[0][1];
+      sourceMsgSender = transactions[0][2];
+      sourceBeneficiary = transactions[0][3];
+      // console.log(tx);
+    }
+  }
+  if (!tx) {
+    return null;
+  }
+  return {
+    ...tx.toObject(),
+    remoteContract,
+    sourceMsgSender,
+    sourceBeneficiary,
+  };
 };
 
 export const getAllTransactions = async (
@@ -74,47 +269,45 @@ export const getAllTransactions = async (
 };
 
 export const saveTransactions = async (txs: any[]) => {
+  // console.log({ txs });
   return await QuantumPortalTransactionModel.insertMany(txs);
 };
 
-export const getDataForChart = async (
-  startDate: any,
-  endDate: any,
-): Promise<chartData[]> => {
-  const result = QuantumPortalTransactionModel.aggregate([
-    {
-      $match: {
+export const getDataForChart = async (): Promise<any> => {
+  try {
+    const newArray = [];
+    const horlyStartDate = new Date();
+
+    for (let i = 0; i < 24; i++) {
+      // Create a new date for the current hour
+      const currentDate = new Date(
+        horlyStartDate.getTime() - 40 * 60 * 60 * 1000,
+      );
+      currentDate.setHours(horlyStartDate.getHours() + i);
+
+      // Create a new date for the end of the hour
+      const endDate = new Date(currentDate);
+      endDate.setHours(currentDate.getHours() + 1);
+
+      // Query for records within the current hour
+      const hoursResult = await QuantumPortalTransactionModel.find({
         timestamp: {
-          $gte: startDate,
-          $lte: endDate,
+          $gte: currentDate.toISOString(),
+          $lte: endDate.toISOString(),
         },
-      },
-    },
-    {
-      $group: {
-        _id: {
-          $dateToString: {
-            format: '%d/%m/%Y',
-            date: { $toDate: { $multiply: ['$timestamp', 1000] } }, // Convert timestamp to milliseconds
-          },
-        },
-        count: { $sum: 1 },
-      },
-    },
-    {
-      $project: {
-        _id: 0,
-        date: '$_id',
-        count: 1,
-      },
-    },
-    {
-      $sort: {
-        date: 1,
-      },
-    },
-  ]);
-  return result;
+      });
+
+      // Push the date and count to the array
+      newArray.push({
+        date: currentDate.toISOString(),
+        volume: hoursResult.length,
+      });
+    }
+    return newArray;
+  } catch (error) {
+    console.error('Error fetching data for chart:', error);
+    throw error;
+  }
 };
 
 export const getTransactionByQuery = async (query: Object): Promise<any> => {
@@ -161,8 +354,8 @@ export const fetchRemoteTransactionWithMinedAndFinalizedTx = async (
   const provider = new ethers.providers.JsonRpcProvider(process.env.RPC_URL);
   // console.log('Fetching provider ', provider);
   let tx = await provider.getTransaction(txHash);
-  console.log('Found transaction,', tx);
   if (tx === null) {
+    console.log('Found transaction,', tx, tx === null);
     return new Error('Transaction not found');
   }
   const block = await provider.getBlock(tx?.blockNumber);
@@ -385,4 +578,20 @@ export const fetchRemoteTransactionWithMinedAndFinalizedTx = async (
     }
   }
   return responseObj;
+};
+export const fetchStateDataFromCoinGekoAPI = async () => {
+  try {
+    const { data } = await axios.get(COINGECKO_API);
+    return {
+      price: data?.market_data.current_price.usd,
+      priceChangePercentage: data?.market_data.price_change_percentage_24h,
+      marketCap: data?.market_data.market_cap.usd,
+      marketCapChangePercentage:
+        data?.market_data.market_cap_change_percentage_24h,
+      volume24h: data?.market_data.total_volume.usd,
+    };
+  } catch (error) {
+    console.error('Error fetching CoinGecko data:', error);
+    throw new Error('Failed to fetch CoinGecko data');
+  }
 };

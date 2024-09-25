@@ -20,4 +20,7 @@ router.get(
   accountController.getBalances,
 );
 
+router.get('/addresses/:address', accountController.getAddressDetail);
+router.get('/addresses/:address/logs', accountController.getAddressLogs);
+
 export default router;

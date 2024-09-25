@@ -4,6 +4,8 @@ import {
   QuantumPortalContractObjectModel,
 } from '../models';
 import { ITransactionListResponse, QuantumPortalAccount } from '../interfaces';
+import axios from 'axios';
+import config from '../config/config';
 // import ApiError from '../utils/ApiError';
 // import httpStatus from 'http-status';
 
@@ -61,4 +63,18 @@ export const getAccount = async (address: string): Promise<any> => {
     };
   }
   return account;
+};
+
+export const getAddressDetail = async (address: string): Promise<any> => {
+  const addressDetail = await axios.get(
+    `${config.explorerUrl}/api/v2/addresses/${address}`,
+  );
+  return addressDetail.data;
+};
+
+export const getAddressLogs = async (address: string): Promise<any> => {
+  const addressLogs = await axios.get(
+    `${config.explorerUrl}/api/v2/addresses/${address}/logs`,
+  );
+  return addressLogs.data;
 };

@@ -4,6 +4,10 @@ import {
 } from '../models';
 
 export const saveBlock = async (block: any) => {
+  const existedBlock = await getBlockByQuery({ number: block.number });
+  if (existedBlock) {
+    return existedBlock;
+  }
   return await QuantumPortalBlockModel.create(block);
 };
 
@@ -79,10 +83,7 @@ export const getAllBlocks = async (
   limit: number,
   queryData: any,
 ): Promise<any> => {
-  const docsPromise = await QuantumPortalBlockModel.find(queryData)
-    .sort({ timestamp: -1 })
-    .skip((page - 1) * limit)
-    .limit(limit);
+  const docsPromise = await QuantumPortalBlockModel.find(queryData);
 
   const countPromise = QuantumPortalBlockModel.countDocuments(queryData).exec();
 
@@ -110,4 +111,46 @@ export const getLastBlockNumber = async (): Promise<number | undefined> => {
     return;
   }
   return lastBlock[0].number;
+};
+
+export const getBlockBySourceChainId = async (
+  chainId: string,
+  blockNumber: number,
+): Promise<number | undefined | any[]> => {
+  const block = await QuantumPortalBlockModel.aggregate([
+    {
+      $match: {
+        number: Number(blockNumber),
+      },
+    },
+    {
+      $lookup: {
+        from: 'quantumportaltransactions',
+        localField: 'number',
+        foreignField: 'block',
+        pipeline: [
+          {
+            $match: {
+              $and: [
+                { 'decodedInput.parameters.value': chainId },
+                { 'decodedInput.parameters.name': 'remoteChainId' },
+              ],
+            },
+          },
+        ],
+        as: 'result',
+      },
+    },
+    {
+      $unwind: '$transactions',
+    },
+    {
+      $match: {
+        'transactions.decodedInput.parameters.name': 'remoteChainId',
+        'transactions.decodedInput.parameters.value': chainId,
+      },
+    },
+  ]);
+
+  return block.length ? block : undefined;
 };

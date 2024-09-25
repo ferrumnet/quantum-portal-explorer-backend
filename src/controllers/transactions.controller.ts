@@ -20,6 +20,41 @@ export const getTransactions = async (
   }
 };
 
+export const getInternalTransactions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const transactions = await transactionsService.getInternalTxs(
+      req.query.page as any,
+      req.query.limit as any,
+      req.query.address as any,
+    );
+    res.send(transactions);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getTransferTokenTransactions = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): Promise<void> => {
+  try {
+    const transactions = await transactionsService.getTransferTokensTxs(
+      'token_transfer',
+      req.query.address as any,
+      req.query.page as any,
+      req.query.limit as any,
+    );
+    res.send(transactions);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getTransaction = async (
   req: Request,
   res: Response,
