@@ -56,11 +56,11 @@ jobs:
     needs: build
     name: Deploy
     runs-on: ubuntu-latest
-    environment: development
+    environment: production
     steps:
     - name: Deploy to ecs
       id: deploy-image
       env:
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker run fabfuel/ecs-deploy:1.10.2 ecs deploy ${{ env.ECS_CLUSTER }}  ${{ env.ECS_SERVICE }} --tag ${{ github.sha }} --region ${{ env.AWS_REGION }} --access-key-id ${{ secrets.AWS_ACCESS_KEY_ID }} --secret-access-key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        docker run fabfuel/ecs-deploy:1.10.2 ecs deploy ${{ env.ECS_CLUSTER }}  ${{ env.ECS_SERVICE }} --tag ${{ github.sha }} --region ${{ env.AWS_REGION }} --access-key-id ${{ secrets.PROD_AWS_ACCESS_KEY_ID }} --secret-access-key ${{ secrets.PROD_AWS_SECRET_ACCESS_KEY }}
