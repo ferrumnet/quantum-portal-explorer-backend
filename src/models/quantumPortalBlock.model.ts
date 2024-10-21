@@ -7,6 +7,7 @@ const quantumPortalBlockSchema = new Schema({
   number: Number,
   nonce: String,
   timestamp: String,
+  dateTimestamp: Date,
   difficulty: String,
   gasLimit: String,
   gasUsed: String,
