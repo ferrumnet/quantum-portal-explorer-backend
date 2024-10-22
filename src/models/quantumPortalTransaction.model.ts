@@ -25,6 +25,7 @@ const quantumPortalTransactionSchema = new Schema({
   value: String,
   chainId: Number,
   timestamp: String,
+  dateTimestamp: Date,
   fee: String,
   inputData: String,
   decodedInput: Object,
