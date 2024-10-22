@@ -157,7 +157,7 @@ export const getTransferTokensTxs = async (
     query.$or = [{ from: address }, { to: address }];
   }
   const docsPromise = QuantumPortalTransactionModel.find(query)
-    .sort({ timestamp: -1 })
+    .sort({ dateTimestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
   const countPromise =
