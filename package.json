@@ -4,7 +4,8 @@
   "main": "src/server.ts",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development nodemon && ts-node src/server.ts"
+    "dev": "cross-env NODE_ENV=development nodemon && ts-node src/server.ts",
+    "migration": "cross-env NODE_ENV=development ts-node src/migration/timestampToDate.ts"
   },
   "devDependencies": {
     "@types/cors": "^2.8.13",
