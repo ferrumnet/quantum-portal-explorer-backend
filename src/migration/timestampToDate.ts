@@ -24,28 +24,24 @@ const migrateTimestampsForBlocks = async () => {
         .skip((page - 1) * limit)
         .exec();
 
-      for (const doc of docs) {
-        try {
-          // Convert the string timestamp to a Date object
-          const date = new Date(doc.timestamp);
-          console.log(`Document ${doc._id} timestamp: ${doc.timestamp}`);
-          if (date) {
-            // Update the document with the new Date field
-            await QuantumPortalBlockModel.updateOne(
-              { _id: doc._id },
-              { $set: { dateTimestamp: date } },
-              { new: true },
-            );
-            console.log(`Document ${doc._id} updated successfully.`);
-          } else {
-            console.error(
-              `Invalid date for document ${doc._id}: ${doc.timestamp}`,
-            );
-          }
-        } catch (error) {
-          console.error(`Error processing document ${doc._id}:`, error);
+      const updatedDocs = docs.map(doc => {
+        const date = new Date(doc.timestamp);
+        console.log(`Document ${doc._id} timestamp: ${doc.timestamp}`);
+        if (date) {
+          return {
+            updateOne: {
+              filter: { _id: doc._id },
+              update: { $set: { dateTimestamp: date } },
+            },
+          };
+        } else {
+          console.error(
+            `Invalid date for document ${doc._id}: ${doc.timestamp}`,
+          );
         }
-      }
+      });
+      console.log(`Updating ${updatedDocs.length} documents...`);
+      await QuantumPortalBlockModel.bulkWrite(updatedDocs);
     }
     console.log('Blocks Migration completed successfully.');
   } catch (err) {
@@ -70,29 +66,24 @@ const migrateTimestampsForTransactions = async () => {
         .limit(limit)
         .skip((page - 1) * limit)
         .exec();
-
-      for (const doc of docs) {
-        try {
-          // Convert the string timestamp to a Date object
-          const date = new Date(doc.timestamp);
-          console.log(`Document ${doc._id} timestamp: ${doc.timestamp}`);
-          if (date) {
-            // Update the document with the new Date field
-            await QuantumPortalTransactionModel.updateOne(
-              { _id: doc._id },
-              { $set: { dateTimestamp: date } },
-              { new: true },
-            );
-            console.log(`Document ${doc._id} updated successfully.`);
-          } else {
-            console.error(
-              `Invalid date for document ${doc._id}: ${doc.timestamp}`,
-            );
-          }
-        } catch (error) {
-          console.error(`Error processing document ${doc._id}:`, error);
+      const updatedDocs = docs.map(doc => {
+        const date = new Date(doc.timestamp);
+        console.log(`Document ${doc._id} timestamp: ${doc.timestamp}`);
+        if (date) {
+          return {
+            updateOne: {
+              filter: { _id: doc._id },
+              update: { $set: { dateTimestamp: date } },
+            },
+          };
+        } else {
+          console.error(
+            `Invalid date for document ${doc._id}: ${doc.timestamp}`,
+          );
         }
-      }
+      });
+      console.log(`Updating ${updatedDocs.length} documents...`);
+      await QuantumPortalTransactionModel.bulkWrite(updatedDocs);
     }
     console.log('Transactions Migration completed successfully.');
   } catch (err) {
