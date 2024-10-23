@@ -58,9 +58,10 @@ export const getRecentBlocks = async (
   limit: number,
 ): Promise<any> => {
   const docsPromise = await QuantumPortalBlockModel.find()
-    .sort({ timestamp: -1 })
+    .sort({ dateTimestamp: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
+
   const countPromise = QuantumPortalTransactionModel.countDocuments().exec();
 
   const [totalResults, results] = await Promise.all([
